@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dci-agent"
+version = "0.1.0"
+description = "Calculate writer-level DCI and publish to dashboards."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "PyYAML>=6.0",
+  "gspread>=6.0.0",
+  "google-auth>=2.35.0",
+  "openpyxl>=3.1.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dci_agent*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,19 @@
+writer_id,writer_name,manager_name,manager_id,pod,team
+matt_thies,Matt Thies,Adam Christensen,adam_christensen,Pod 1,Execution
+steve_goodman,Steve Goodman,Adam Christensen,adam_christensen,Pod 1,Execution
+sabrina_jess,Sabrina Jess,Adam Christensen,adam_christensen,Pod 1,Execution
+sari_lorber,Sari Lorber,Adam Christensen,adam_christensen,Pod 1,Execution
+rick_fox,Rick Fox,Danielle Biber,danielle_biber,Pod 2,Execution
+orna_kenet,Orna Kenet,Danielle Biber,danielle_biber,Pod 2,Execution
+judy_wexler,Judy Wexler,Danielle Biber,danielle_biber,Pod 2,Execution
+gillian_candiloro,Gillian Candiloro,Adam Christensen,adam_christensen,Pod 1,Execution
+megha_magaji,Megha Magaji,Adam Christensen,adam_christensen,Pod 1,Execution
+shuli_finkelstein,Shuli Finkelstein,Danielle Biber,danielle_biber,Pod 2,Execution
+kate_reuveny,Kate Reuveny,Danielle Biber,danielle_biber,Pod 2,Execution
+elisha_khera,Elisha Khera,Danielle Biber,danielle_biber,Pod 2,Execution
+mark_lawrence,Mark Lawrence,Danielle Biber,danielle_biber,Pod 2,Execution
+rivka_teller,Rivka Teller,Vita Gilin,vita_gilin,SOH,Standards
+yonit_bisk,Yonit Bisk,Vita Gilin,vita_gilin,SOH,Standards
+mike_ford,Mike Ford,Vita Gilin,vita_gilin,SOH,Standards
+ben_skelker,Ben Skelker,Vita Gilin,vita_gilin,SOH,Standards
+adam_vinokoor,Adam Vinacoor,Vita Gilin,vita_gilin,SOH,Standards

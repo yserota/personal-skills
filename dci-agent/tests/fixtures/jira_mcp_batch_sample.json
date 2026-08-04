@@ -1,0 +1,84 @@
+[
+  {
+    "id": "1636255",
+    "key": "DOC-22649",
+    "summary": "Create microcopy gem for Discovered accounts",
+    "status": {
+      "name": "To Do"
+    },
+    "issue_type": {
+      "name": "Task"
+    },
+    "assignee": {
+      "display_name": "Kate Reuveny",
+      "name": "kreuveny"
+    },
+    "created": "2026-05-27T13:10:48.000+0300",
+    "customfield_12258": {
+      "value": null
+    },
+    "customfield_12259": {
+      "value": null
+    },
+    "customfield_16126": {
+      "value": "kreuveny"
+    },
+    "customfield_21925": {
+      "value": null
+    }
+  },
+  {
+    "id": "1636249",
+    "key": "DOC-22648",
+    "summary": "Using Git worktrees tutorial",
+    "status": {
+      "name": "Open"
+    },
+    "issue_type": {
+      "name": "Task"
+    },
+    "assignee": {
+      "display_name": "Unassigned"
+    },
+    "created": "2026-05-27T13:08:15.000+0300",
+    "customfield_12258": {
+      "value": null
+    },
+    "customfield_12259": {
+      "value": null
+    },
+    "customfield_16126": {
+      "value": "kreuveny"
+    },
+    "customfield_21925": {
+      "value": null
+    }
+  },
+  {
+    "id": "1636247",
+    "key": "DOC-22647",
+    "summary": "Git/CLI tutorial",
+    "status": {
+      "name": "Open"
+    },
+    "issue_type": {
+      "name": "Task"
+    },
+    "assignee": {
+      "display_name": "Unassigned"
+    },
+    "created": "2026-05-27T13:06:06.000+0300",
+    "customfield_12258": {
+      "value": null
+    },
+    "customfield_12259": {
+      "value": null
+    },
+    "customfield_16126": {
+      "value": "kreuveny"
+    },
+    "customfield_21925": {
+      "value": null
+    }
+  }
+]
