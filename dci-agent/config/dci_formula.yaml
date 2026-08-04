@@ -1,0 +1,84 @@
+formula:
+  name: demand_to_capacity_index
+  version: "1.3.0"
+
+operational_dci:
+  expression: incoming_demand / active_capacity_realized
+  incoming_source: StartWork in reporting window
+  capacity_source: FinishWork in reporting window
+
+story_points_dci:
+  expression: story_points_started / story_points_finished
+  incoming_source: sum(Story Points) for StartWork in reporting window
+  capacity_source: sum(Story Points) for FinishWork in reporting window
+  missing_story_points_default: 1.0
+
+intake_health:
+  intake_count_source: Created in reporting window
+  avg_queue_lag_days_source: average(StartWork - Created)
+  intake_dci_expression: intake_count / active_capacity_realized
+  intake_dci_points_expression: story_points_intake / story_points_finished
+  backlog_pressure_expression: intake_count - incoming_demand
+
+ai_segmentation:
+  ai_adoption_pct_expression: ai_finished_count / active_capacity_realized
+  ai_adoption_tagged_pct_expression: ai_finished_count / (ai_finished_count + manual_finished_count)
+  operational_dci_ai_expression: ai_started_count / ai_finished_count
+  operational_dci_manual_expression: manual_started_count / manual_finished_count
+  dci_ai_vs_manual_delta_expression: operational_dci_ai - operational_dci_manual
+  ai_usage_source: Jira TW-AI Usage field (multi-select merged at transform)
+  manual_values:
+    - "No usage"
+    - none
+    - manual
+    - n/a
+    - no
+
+fields:
+  incoming_demand:
+    source_column: incoming_demand
+    type: number
+    required: true
+    min: 0
+  active_capacity_realized:
+    source_column: resolved_count
+    type: number
+    required: true
+    min: 0
+  intake_count:
+    source_column: intake_count
+    type: number
+    required: false
+    min: 0
+    default: 0
+  avg_queue_lag_days:
+    source_column: avg_queue_lag_days
+    type: number
+    required: false
+    min: 0
+    default: 0
+
+rules:
+  divide_by_zero:
+    when_active_capacity_is_zero: null
+    status: "error"
+    reason: "active_capacity_realized_zero"
+  missing_writer_id:
+    status: "error"
+    reason: "missing_writer_id"
+  partial_window:
+    status: "warning"
+    reason: "partial_window"
+    confidence_penalty: 0.2
+
+confidence:
+  base: 1.0
+  penalties:
+    partial_window: 0.2
+    missing_optional_fields: 0.1
+    missing_intake_fields: 0.15
+  floor: 0.0
+
+output:
+  precision: 4
+  null_representation: ""

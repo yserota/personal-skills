@@ -1,0 +1,70 @@
+# Jira MCP field mapping for DCI CSV export.
+# Custom field IDs are for the DOC/DOCS Jira instance (policy-broker MCP).
+
+projects:
+  - DOC
+  # DOCS is not a valid Jira project key in policy-broker; DOC only.
+
+mcp_search:
+  page_size: 50
+  fields:
+    - summary
+    - status
+    - issuetype
+    - assignee
+    - created
+    - customfield_12258
+    - customfield_12259
+    - customfield_16126
+    - customfield_21925
+    - customfield_10128
+    - customfield_10020
+    - updated
+    - resolutiondate
+    - labels
+    - customfield_10014
+
+jql_template: |
+  project in ({projects})
+  AND (
+    "StartWork" >= "{period_start}" AND "StartWork" <= "{period_end}"
+    OR "FinishWork" >= "{period_start}" AND "FinishWork" <= "{period_end}"
+    OR created >= "{period_start}" AND created <= "{period_end}"
+  )
+  ORDER BY "Assigned Technical Writer", "StartWork" ASC
+
+csv_columns:
+  - Key
+  - Issue Type
+  - Status
+  - Summary
+  - Assignee
+  - Assigned Technical Writer
+  - Story Points
+  - StartWork
+  - FinishWork
+  - Created
+  - TW-AI Usage
+  - Sprint
+  - Updated
+  - Resolved
+  - Labels
+  - Epic Link
+
+field_map:
+  Key: key
+  Issue Type: issuetype.name
+  Status: status.name
+  Summary: summary
+  Assignee: assignee.name
+  Assigned Technical Writer: customfield_16126
+  Story Points: customfield_10128
+  StartWork: customfield_12258
+  FinishWork: customfield_12259
+  Created: created
+  TW-AI Usage: customfield_21925
+  Sprint: customfield_10020
+  Updated: updated
+  Resolved: resolutiondate
+  Labels: labels
+  Epic Link: customfield_10014

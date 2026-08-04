@@ -1,0 +1,4 @@
+writer_id,writer_name,period_start,period_end,incoming_demand,resolved_count,active_cycle_days
+,Jane Doe,2026-05-01,2026-05-14,20,25,5.5
+w-002,John Smith,2026-05-14,2026-05-01,15,15,4.0
+w-003,Alex Kim,2026-05-01,2026-05-14,-2,10,3.0

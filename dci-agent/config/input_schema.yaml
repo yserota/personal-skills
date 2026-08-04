@@ -1,0 +1,91 @@
+required_columns:
+  - writer_id
+  - writer_name
+  - period_start
+  - period_end
+  - incoming_demand
+  - resolved_count
+  - active_cycle_days
+
+optional_columns:
+  - intake_count
+  - avg_queue_lag_days
+  - pod
+  - team
+  - work_type
+  - manual_vs_ai_flag
+  - ai_started_count
+  - manual_started_count
+  - untagged_started_count
+  - ai_finished_count
+  - manual_finished_count
+  - untagged_finished_count
+  - active_cycle_days_ai
+  - active_cycle_days_manual
+  - story_points_started
+  - story_points_finished
+  - story_points_intake
+  - story_points_coverage_pct
+
+types:
+  writer_id: string
+  writer_name: string
+  period_start: date
+  period_end: date
+  incoming_demand: number
+  resolved_count: number
+  active_cycle_days: number
+  intake_count: number
+  avg_queue_lag_days: number
+  pod: string
+  team: string
+  work_type: string
+  manual_vs_ai_flag: string
+  ai_started_count: number
+  manual_started_count: number
+  untagged_started_count: number
+  ai_finished_count: number
+  manual_finished_count: number
+  untagged_finished_count: number
+  active_cycle_days_ai: number
+  active_cycle_days_manual: number
+  story_points_started: number
+  story_points_finished: number
+  story_points_intake: number
+  story_points_coverage_pct: number
+
+constraints:
+  incoming_demand:
+    min: 0
+  resolved_count:
+    min: 0
+  active_cycle_days:
+    min: 0
+  intake_count:
+    min: 0
+  avg_queue_lag_days:
+    min: 0
+  ai_started_count:
+    min: 0
+  manual_started_count:
+    min: 0
+  untagged_started_count:
+    min: 0
+  ai_finished_count:
+    min: 0
+  manual_finished_count:
+    min: 0
+  untagged_finished_count:
+    min: 0
+  active_cycle_days_ai:
+    min: 0
+  active_cycle_days_manual:
+    min: 0
+  story_points_started:
+    min: 0
+  story_points_finished:
+    min: 0
+  story_points_intake:
+    min: 0
+  story_points_coverage_pct:
+    min: 0

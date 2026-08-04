@@ -1,0 +1,14 @@
+# generated outputs
+out/
+tmp/
+logs/
+
+# python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# local config
+.env
+*.code-workspace

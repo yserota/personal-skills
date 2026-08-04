@@ -1,0 +1,18 @@
+writer_id,writer_name,period_start,period_end,incoming_demand,resolved_count,intake_count,story_points_started,story_points_finished,story_points_intake,story_points_coverage_pct,avg_queue_lag_days,active_cycle_days,active_cycle_days_ai,active_cycle_days_manual,ai_started_count,manual_started_count,untagged_started_count,ai_finished_count,manual_finished_count,untagged_finished_count,pod,team,work_type,manual_vs_ai_flag
+ben_skelker,Ben Skelker,2026-01-01,2026-06-30,28,58,45,89.0,112.0,119.0,44.7368,19.51,136.44,10.57,2.0,23,4,1,17,8,33,,,unknown,ai
+elisha_khera,Elisha Khera,2026-01-01,2026-06-30,48,62,81,106.0,141.0,191.0,82.7586,29.64,51.31,69.94,45.75,16,27,5,15,41,6,,,unknown,mixed
+gillian_candiloro,Gillian Candiloro,2026-01-01,2026-06-30,77,92,126,167.0,180.0,226.0,63.9098,21.61,14.91,16.5,1.0,53,1,23,68,4,20,,,unknown,ai
+judy_wexler,Judy Wexler,2026-01-01,2026-06-30,145,171,195,349.0,408.0,439.0,94.9541,16.98,8.86,11.57,5.42,83,56,6,87,69,15,,,unknown,ai
+kate_reuveny,Kate Reuveny,2026-01-01,2026-06-30,38,53,78,82.0,127.0,210.0,85.1852,27.33,6.84,5.5,1.6,30,5,3,46,6,1,,,unknown,ai
+mark_lawrence,Mark Lawrence,2026-01-01,2026-06-30,36,58,71,91.0,132.0,177.0,89.1892,29.05,9.91,13.62,1.0,21,2,13,33,7,18,,,unknown,ai
+matt_thies,Matt Thies,2026-01-01,2026-06-30,155,174,230,229.0,261.0,318.0,92.0833,19.64,6.27,7.13,3.67,105,41,9,106,51,17,,,unknown,ai
+megha_magaji,Megha Magaji,2026-01-01,2026-06-30,73,84,87,147.0,158.0,167.0,91.0891,47.96,12.78,10.72,6.25,39,24,10,40,27,17,,,unknown,ai
+mike_ford,Mike Ford,2026-01-01,2026-06-30,4,8,24,13.0,23.0,39.0,32.0,7.0,0.75,0.75,0.0,4,0,0,7,0,1,,,unknown,ai
+orna_kenet,Orna Kenet,2026-01-01,2026-06-30,67,301,317,167.0,654.0,712.0,91.0811,31.01,18.31,23.53,11.91,36,19,12,141,121,39,,,unknown,mixed
+rick_fox,Rick Fox,2026-01-01,2026-06-30,157,267,246,317.0,525.0,499.0,95.2703,19.91,6.83,8.79,3.34,83,68,6,138,101,28,,,unknown,ai
+rivka_teller,Rivka Teller,2026-01-01,2026-06-30,40,99,59,154.0,180.75,225.0,47.9675,24.51,220.34,54.82,358.14,25,8,7,23,36,40,,,unknown,mixed
+sabrina_jess,Sabrina Jess,2026-01-01,2026-06-30,78,113,176,234.0,397.0,575.0,78.8177,69.6,25.96,13.91,15.82,44,15,19,60,20,33,,,unknown,ai
+sari_lorber,Sari Lorber,2026-01-01,2026-06-30,58,84,91,154.0,173.0,196.0,60.3604,24.18,24.97,27.15,11.0,38,7,13,45,9,30,,,unknown,ai
+shuli_finkelstein,Shuli Finkelstein,2026-01-01,2026-06-30,193,245,240,229.4,294.9,278.4,82.2951,22.92,27.02,21.88,24.5,106,68,19,122,90,33,,,unknown,ai
+steve_goodman,Steve Goodman,2026-01-01,2026-06-30,157,253,243,195.0,314.0,311.0,77.2414,20.81,8.93,8.68,5.62,117,34,6,167,49,37,,,unknown,ai
+yonit_bisk,Yonit Bisk,2026-01-01,2026-06-30,55,185,81,221.0,528.0,276.0,74.6114,6.44,112.72,8.3,317.32,39,10,6,46,134,5,,,unknown,mixed
