@@ -3,6 +3,10 @@ out/
 tmp/
 logs/
 
+# canvas build artifacts (Cursor injects these into managed paths, not the repo)
+canvases/node_modules/
+canvases/tsconfig.json
+
 # python
 .venv/
 __pycache__/
