@@ -33,14 +33,21 @@ This script runs inside your Google Workspace account. It exports your Gmail and
 Calendar to a `day-manager/` folder in your Google Drive each morning at 8am.
 Google Drive for Desktop then syncs those files to your local machine automatically.
 
+> **Corporate network note:** Some organizations block https://script.google.com
+> on certain VPN profiles. If you see an access error, try switching VPN configurations
+> or connecting from a different network before proceeding.
+
 ### 3a. Create the script
 
 1. Go to https://script.google.com (sign in with your **work** Google account)
 2. Click **New project**
 3. Name it `day-manager` (top-left title area)
 4. Delete all existing code in the editor
-5. Open `apps-script/day_manager.gs` from this project and **paste the entire contents**
-6. Click **Save** (Ctrl+S)
+5. Get the script code — use whichever method works on your machine:
+   - **Option A:** Open `apps-script/day_manager.gs` in Cursor, select all (Ctrl+A), copy (Ctrl+C)
+   - **Option B:** Open a Cursor chat in this project and ask: *"Show me the full contents of apps-script/day_manager.gs"* — then copy from the chat response
+6. Paste into the Apps Script editor, replacing any existing code
+7. Click **Save** (Ctrl+S)
 
 ### 3b. Run setup once
 
