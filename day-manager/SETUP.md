@@ -33,14 +33,21 @@ This script runs inside your Google Workspace account. It exports your Gmail and
 Calendar to a `day-manager/` folder in your Google Drive each morning at 8am.
 Google Drive for Desktop then syncs those files to your local machine automatically.
 
+> **Corporate network note:** Some organizations block https://script.google.com
+> on certain VPN profiles. If you see an access error, try switching VPN configurations
+> or connecting from a different network before proceeding.
+
 ### 3a. Create the script
 
 1. Go to https://script.google.com (sign in with your **work** Google account)
 2. Click **New project**
 3. Name it `day-manager` (top-left title area)
 4. Delete all existing code in the editor
-5. Open `apps-script/day_manager.gs` from this project and **paste the entire contents**
-6. Click **Save** (Ctrl+S)
+5. Get the script code — use whichever method works on your machine:
+   - **Option A:** Open `apps-script/day_manager.gs` in Cursor, select all (Ctrl+A), copy (Ctrl+C)
+   - **Option B:** Open a Cursor chat in this project and ask: *"Show me the full contents of apps-script/day_manager.gs"* — then copy from the chat response
+6. Paste into the Apps Script editor, replacing any existing code
+7. Click **Save** (Ctrl+S)
 
 ### 3b. Run setup once
 
@@ -147,9 +154,10 @@ The Apps Script already handles Gmail + Calendar at 8am via its own trigger.
 Register the PowerShell wrapper to run `ingest_all.py` (Slack + verification) daily:
 
 ```powershell
+$scriptPath = (Resolve-Path "scheduler\run_ingest.ps1").Path
 schtasks /create `
   /tn "DayManagerIngest" `
-  /tr "powershell.exe -ExecutionPolicy Bypass -File C:\Users\yserota\Documents\Cursor-AI\day-manager\scheduler\run_ingest.ps1" `
+  /tr "powershell.exe -ExecutionPolicy Bypass -File `"$scriptPath`"" `
   /sc DAILY `
   /st 08:05 `
   /ru "%USERNAME%" `
@@ -179,15 +187,47 @@ Log output is written to `logs\ingest.log` and `logs\scheduler.log`.
 
 ## 8. Use the Cursor skill
 
-After the morning run, open Cursor in this folder and type:
+### 8a. Open this project in Cursor
+
+Open Cursor and open this folder as your workspace:
+**File → Open Folder → select the `day-manager` folder**
+
+The skill is defined in `.cursor/skills/manage-my-day/SKILL.md` and is
+automatically available once the folder is open.
+
+### 8b. Run the skill
+
+After the morning ingestion has run (Apps Script + `ingest_all.py`), open a new
+Cursor chat and type:
 
 ```
 /manage-my-day
 ```
 
-The skill reads today's `gmail.txt`, `calendar.txt`, and `slack.txt`, sends them to
-Claude for analysis, and renders a four-panel canvas:
-- **Schedule** — time-blocked plan for the day
-- **Actions** — tasks extracted from your messages
-- **Digest** — key email and Slack highlights
-- **Prep** — context and suggested questions for each meeting
+Cursor will invoke the skill, which:
+1. Reads today's `gmail.txt`, `calendar.txt`, and `slack.txt` from `DATA_DIR`
+2. Sends the contents to Claude for analysis
+3. Builds a four-panel canvas with your daily briefing:
+   - **Schedule** — time-blocked plan layered over your calendar
+   - **Actions** — tasks extracted from emails and Slack, sorted by urgency
+   - **Digest** — key highlights from email and Slack
+   - **Prep** — context and suggested questions for each meeting
+
+### 8c. Daily workflow
+
+Each morning:
+1. Apps Script runs at 8:00 AM → writes `gmail.txt` and `calendar.txt` to Drive
+2. Task Scheduler runs at 8:05 AM → fetches Slack, verifies all three files
+3. Open Cursor → new chat → `/manage-my-day`
+
+### 8d. Troubleshooting the skill
+
+**"Gmail and Calendar data are missing"** — the skill is looking in the wrong folder.
+Make sure `DATA_DIR` in `.env` points to your Google Drive sync path:
+```
+DATA_DIR=G:\My Drive\day-manager
+```
+Then open Cursor with the `day-manager` folder as the workspace (not another project).
+
+**Skill not found** — make sure you opened the `day-manager` folder directly in Cursor,
+not a parent folder or a different project.
