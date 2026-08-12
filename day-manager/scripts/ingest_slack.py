@@ -98,6 +98,15 @@ def fetch_channel_messages(client: WebClient, channel_id: str) -> list[dict]:
     return messages
 
 
+def resolve_channel_name(client: WebClient, channel_id: str) -> str:
+    """Return the human-readable name for a channel ID, falling back to the ID."""
+    try:
+        resp = client.conversations_info(channel=channel_id)
+        return resp["channel"].get("name") or channel_id
+    except SlackApiError:
+        return channel_id
+
+
 def resolve_username(client: WebClient, user_id: str, cache: dict) -> str:
     if user_id in cache:
         return cache[user_id]
@@ -163,32 +172,39 @@ def main():
     client = WebClient(token=SLACK_TOKEN)
     user_cache: dict = {}
 
+    body_lines: list[str] = []
+    total = 0
+    display_names: list[str] = []
+
+    for channel_input in CHANNELS:
+        print(f"Resolving #{channel_input}…")
+        channel_id = resolve_channel_id(client, channel_input)
+        if not channel_id:
+            print(f"  WARNING: channel #{channel_input} not found (not a member?)")
+            body_lines += [f"#{channel_input}", "  (channel not found or bot not invited)", ""]
+            display_names.append(channel_input)
+            continue
+
+        # If the config value was a raw channel ID, look up the human-readable name
+        is_raw_id = channel_input.upper().startswith("C") and len(channel_input) >= 9
+        display_name = resolve_channel_name(client, channel_id) if is_raw_id else channel_input
+        display_names.append(display_name)
+
+        print(f"  Fetching messages for #{display_name}…")
+        messages = fetch_channel_messages(client, channel_id)
+        total += len(messages)
+        body_lines += format_channel(display_name, messages, client, user_cache)
+
     header = [
         f"SLACK DIGEST — {run_at.strftime('%A, %B %d %Y').replace(' 0', ' ')}",
-        f"Channels: {', '.join('#' + c for c in CHANNELS)}",
+        f"Channels: {', '.join('#' + n for n in display_names)}",
         "=" * 72,
         "",
     ]
 
-    body_lines: list[str] = []
-    total = 0
-
-    for channel_name in CHANNELS:
-        print(f"Resolving #{channel_name}…")
-        channel_id = resolve_channel_id(client, channel_name)
-        if not channel_id:
-            print(f"  WARNING: channel #{channel_name} not found (not a member?)")
-            body_lines += [f"#{channel_name}", "  (channel not found or bot not invited)", ""]
-            continue
-
-        print(f"  Fetching messages…")
-        messages = fetch_channel_messages(client, channel_id)
-        total += len(messages)
-        body_lines += format_channel(channel_name, messages, client, user_cache)
-
     output = "\n".join(header + body_lines)
     out_file.write_text(output, encoding="utf-8")
-    print(f"Wrote {total} messages across {len(CHANNELS)} channel(s) → {out_file}")
+    print(f"Wrote {total} messages across {len(display_names)} channel(s) → {out_file}")
 
 
 if __name__ == "__main__":
