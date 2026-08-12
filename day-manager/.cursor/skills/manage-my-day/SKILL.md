@@ -137,9 +137,12 @@ for the current workspace so the IDE can render it:
 ~/.cursor/projects/<workspace-slug>/canvases/day-manager.canvas.tsx
 ```
 
-The workspace slug is derived from the project path (e.g.
-`c-Users-yserota-Documents-Cursor-AI-day-manager`). If unsure, list
-`~/.cursor/projects/` and pick the slug matching this project.
+The workspace slug is derived from the absolute project path with path separators
+replaced by `-` and the leading separator dropped (e.g. a project at
+`/Users/alice/projects/day-manager` → slug `Users-alice-projects-day-manager`).
+If unsure of the slug, list `~/.cursor/projects/` (macOS/Linux) or
+`%USERPROFILE%\.cursor\projects\` (Windows) and pick the entry whose name matches
+this project's path.
 
 A template copy also lives at `day_manager.canvas.tsx` in the project root — use it
 as the base if the canvases copy doesn't exist yet.
