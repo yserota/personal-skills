@@ -40,7 +40,15 @@ File → Open Folder → select the personal-skills folder
 
 The skill uses a live canvas that Cursor renders beside the chat. The canvas source is version-controlled in this repo; you need to copy it to the folder Cursor watches.
 
-Open a PowerShell terminal in Cursor (**Terminal → New Terminal**) and run:
+Open a PowerShell terminal in Cursor (**Terminal → New Terminal**).
+
+**First time only** — allow locally-written scripts to run (no admin rights needed):
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+```
+
+Then deploy the canvases:
 
 ```powershell
 .\deploy-canvases.ps1
@@ -48,7 +56,7 @@ Open a PowerShell terminal in Cursor (**Terminal → New Terminal**) and run:
 
 This copies `canvases/supportability-plan-jul12.canvas.tsx` into your Cursor projects folder. You must open the workspace in Cursor at least once first so Cursor creates that folder.
 
-Re-run `deploy-canvases.ps1` any time you update the canvas source.
+Re-run `.\deploy-canvases.ps1` any time you update the canvas source (the execution policy step is a one-time setup).
 
 ---
 
