@@ -1,0 +1,211 @@
+---
+name: manage-my-day
+description: Read today's ingested Gmail, Google Calendar, and Slack data, analyse it with Claude, and render a four-panel Cursor canvas with a daily digest, action items, time-blocked schedule, and meeting prep notes. Use when the user says "manage my day", "what's on today", "daily briefing", "plan my day", or "show me the dashboard".
+---
+
+# Manage My Day
+
+## Purpose
+
+Reads today's plain-text data files (written by the ingestion scripts), sends them to
+Claude for analysis, then builds or updates `day_manager.canvas.tsx` with four panels:
+
+| Panel | Content |
+|---|---|
+| **Digest** | Key emails and Slack threads — top 3 bullets each |
+| **Actions** | Concrete tasks extracted from messages, with source |
+| **Schedule** | Time-blocked plan layered over calendar events |
+| **Prep** | Per-meeting context, attendees, suggested questions |
+
+---
+
+## When to use
+
+- User says: manage my day, daily briefing, plan my day, what's on today, show me my schedule, what do I need to do.
+- After `ingest_all.py` has been run for today (data files exist).
+- User wants a quick morning orientation before diving in.
+
+---
+
+## Prerequisites
+
+Ingestion scripts must have been run today:
+
+```powershell
+cd C:\Users\yserota\Documents\Cursor-AI\day-manager
+.venv\Scripts\python.exe scripts\ingest_all.py
+```
+
+If the data files for today don't exist, tell the user to run the above first.
+
+---
+
+## Agent workflow
+
+### Step 1 — Locate today's data files
+
+Read the `.env` file in the project root to get `DATA_DIR`. If `.env` is not present
+or `DATA_DIR` is not set, fall back to `G:\My Drive\day-manager` (the confirmed
+Google Drive for Desktop sync path on this machine), then `data/` as a last resort.
+
+```python
+from datetime import date
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+DATA_DIR = Path(os.getenv("DATA_DIR", r"G:\My Drive\day-manager"))
+today = date.today().strftime("%Y-%m-%d")
+day_dir = DATA_DIR / today
+```
+
+Check for:
+- `{day_dir}/gmail.txt`
+- `{day_dir}/calendar.txt`
+- `{day_dir}/slack.txt`
+
+If any file is missing, warn the user and continue with the files that exist. Never fail completely due to a single missing source.
+
+### Step 2 — Read the files
+
+Read all three files in full. They are plain text, typically 5–50 KB each.
+
+### Step 3 — Analyse with Claude
+
+Send the contents to Claude with the following system prompt template. Fill in the actual file contents between the XML tags:
+
+```
+You are a world-class executive assistant. Analyse the following inputs from today
+and produce a structured daily briefing. Be concise, actionable, and prioritised.
+Use the person's actual names, times, and content — do not fabricate anything.
+
+<calendar>
+{calendar.txt contents}
+</calendar>
+
+<gmail>
+{gmail.txt contents}
+</gmail>
+
+<slack>
+{slack.txt contents}
+</slack>
+
+Produce exactly four sections:
+
+## DIGEST
+Summarise the most important emails and Slack messages. For each source, give
+≤5 bullet points. Focus on what requires attention, not FYIs. Lead each bullet
+with the sender/channel and the gist.
+
+## ACTIONS
+List every concrete action item you found across all three sources. Format each as:
+- [ ] {task description} — ({source}: {sender or channel})
+Sort by urgency: URGENT (today), IMPORTANT (this week), NICE (whenever).
+
+## SCHEDULE
+Build a time-blocked plan for today that:
+1. Lists all calendar events with their times.
+2. Fills gaps with work blocks for the URGENT action items.
+3. Flags time conflicts or back-to-back meetings.
+Format: HH:MM – HH:MM  Task or event name [source if not calendar]
+
+## PREP
+For each calendar event with attendees, produce a short prep note:
+- Event name + time
+- Who is attending (besides me)
+- 2–3 bullet points of context from emails/Slack related to this meeting
+- 1–2 suggested agenda items or questions to raise
+If no relevant context is found for an event, say so briefly.
+```
+
+### Step 4 — Parse Claude's output
+
+Extract the four sections from Claude's response:
+- Everything under `## DIGEST` → `digestContent`
+- Everything under `## ACTIONS` → `actionsContent`
+- Everything under `## SCHEDULE` → `scheduleContent`
+- Everything under `## PREP` → `prepContent`
+
+### Step 5 — Write the canvas
+
+Locate the canvas file. It must be written to the Cursor-managed `canvases/` directory
+for the current workspace so the IDE can render it:
+
+```
+~/.cursor/projects/<workspace-slug>/canvases/day-manager.canvas.tsx
+```
+
+The workspace slug is derived from the project path (e.g.
+`c-Users-yserota-Documents-Cursor-AI-day-manager`). If unsure, list
+`~/.cursor/projects/` and pick the slug matching this project.
+
+A template copy also lives at `day_manager.canvas.tsx` in the project root — use it
+as the base if the canvases copy doesn't exist yet.
+
+The canvas file contains a `CONTENT` constant near the top. Update the following fields
+with today's real data from Claude's analysis:
+
+```typescript
+const CONTENT = {
+  date: "{weekday, month day year — e.g. Tuesday, August 11, 2026}",
+  generatedAt: "{HH:MM}",
+  stats: { emails: N, events: N, actions: N },
+
+  schedule: [
+    { time: "HH:MM – HH:MM", block: "description", type: "meeting" | "work" | "break" },
+    // ... one entry per time block from Claude's SCHEDULE section
+  ],
+
+  actions: [
+    { id: "a1", content: "URGENT · description (Source: context)", status: "pending" },
+    // ... prefix each with URGENT ·, IMPORTANT ·, or NICE · to match panel grouping
+  ],
+
+  digest: {
+    email: [
+      { from: "Name", time: "HH:MM or 'yesterday'", text: "summary" },
+    ],
+    slack: [
+      { channel: "#channel-name", text: "summary" },
+    ],
+  },
+
+  prep: [
+    {
+      event: "Meeting name",
+      time: "HH:MM – HH:MM",
+      attendees: "attendee list",
+      context: ["bullet 1", "bullet 2"],
+      questions: ["question 1", "question 2"],
+    },
+  ],
+};
+```
+
+After writing the canvas, present the link to the user:
+
+```
+[Daily Briefing — {date}](~/.cursor/projects/<workspace-slug>/canvases/day-manager.canvas.tsx)
+```
+
+---
+
+## Failure rules
+
+- Data files missing → tell user to run `ingest_all.py` first; do not fabricate content.
+- Claude returns garbled sections → surface the raw output and ask the user to re-run.
+- Canvas file not found → create it fresh (the file should already exist from setup).
+- `.env` / `DATA_DIR` not set → default to `data/` in project root.
+
+---
+
+## Related
+
+- `scripts/ingest_all.py` — run this first each morning
+- `scripts/ingest_gmail.py` — Gmail only
+- `scripts/ingest_gcal.py` — Google Calendar only
+- `scripts/ingest_slack.py` — Slack only
+- `scheduler/run_ingest.ps1` — Task Scheduler wrapper (runs automatically at 08:00)
+- `SETUP.md` — auth configuration guide
