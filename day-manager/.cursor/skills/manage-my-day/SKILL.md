@@ -187,7 +187,9 @@ const CONTENT = {
 };
 ```
 
-After writing the canvas, present the link to the user:
+**SDK constraint — do not use `tone` on `Stat`.** The `Stat` component's `tone` prop (`"success" | "danger" | "warning" | "info"`) is declared in the types but broken at runtime — the SDK internally reads `theme.status.{tone}` which no longer exists in `CanvasTokens`. Omit `tone` on all `Stat` components. To surface urgency, use a `Callout` component with `tone="warning"` beneath the stats grid instead.
+
+
 
 ```
 [Daily Briefing — {date}](~/.cursor/projects/<workspace-slug>/canvases/day-manager.canvas.tsx)
