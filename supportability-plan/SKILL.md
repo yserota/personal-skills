@@ -10,16 +10,25 @@ description: >-
 
 # Supportability Plan — Refresh & Publish
 
+## Setup (first time / new user)
+
+See [SETUP.md](SETUP.md) for full setup instructions: prerequisites, canvas deployment, and exports folder creation.
+
+---
+
 ## Key artifacts
 
 | Artifact | Path |
 | --- | --- |
-| Canvas | `C:\Users\yserota\.cursor\projects\c-Users-yserota-Documents-GitHub-docs\canvases\supportability-plan-jul12.canvas.tsx` |
-| Publish markdown | `C:\Users\yserota\Documents\Supportability-Exports\supportability-publish\` — always use the **highest** `v##` suffix (e.g. `project-plan-publish-20260712-v16.md`) |
-| Metadata JSON | `C:\Users\yserota\Documents\Supportability-Exports\supportability-publish\project-plan-publish-20260712.json` |
+| Canvas (source) | `canvases/supportability-plan-jul12.canvas.tsx` in this repo |
+| Canvas (live) | Deployed to your Cursor projects folder by `deploy-canvases.ps1` |
+| Publish markdown | `<exports-root>\supportability-publish\` — always use the **highest** `v##` suffix |
+| Metadata JSON | `<exports-root>\supportability-publish\project-plan-publish-20260712.json` |
 | Confluence page ID | `700399537` |
 | Jira base URL | `https://ca-il-jira.il.cyber-ark.com:8443/browse/` |
 | MCP server | `user-policy-broker` |
+
+> **Default exports root (yserota):** `C:\Users\yserota\Documents\Supportability-Exports`
 
 ---
 
@@ -47,7 +56,7 @@ Capture `status`, `summary`, and `assignee` for each. Note any status changes (e
 
 ## Step 3 — Update the canvas
 
-File: `supportability-plan-jul12.canvas.tsx`
+File: `canvases/supportability-plan-jul12.canvas.tsx`
 
 - **Changed tickets**: update `status`, `summary`, `kind` fields in `programTickets[]`
 - **New Jira tickets (replacing NEW-XX)**: replace the `NEW-XX` entry with the real `DOC-` key; set `kind: "active"`, `status: "Open"`; update the matching `driverRows[]` entry from `coverage: "gap"` to `coverage: "covered"` and set `existingDoc`
@@ -55,6 +64,8 @@ File: `supportability-plan-jul12.canvas.tsx`
 - **Coverage pills / stats**: the covered/partial/gap counts are computed dynamically from `driverRows[]` — they update automatically when `coverage` values change
 - **Pill counts** (e.g. "15 gaps to file", "35 tickets after filing"): update manually to match the new totals
 - **Callout summary text**: update to reflect the new state
+
+After editing the canvas source, re-run `deploy-canvases.ps1` to push the update to Cursor.
 
 The `isRealKey()` helper ensures all `DOC-` keys render as clickable Jira links automatically.
 
@@ -67,8 +78,8 @@ The `CrossLinks` component (already in the canvas) renders `CROSS-XXXX` values a
 
 ## Step 4 — Generate the new publish markdown
 
-1. Find the current highest version file in `supportability-publish\` (e.g. `v16.md`)
-2. Write a new file incrementing by 1 (e.g. `v17.md`)
+1. Find the current highest version file in `supportability-publish\` (e.g. `v20.md`)
+2. Write a new file incrementing by 1 (e.g. `v21.md`)
 3. Apply these rules throughout:
    - All `DOC-` keys → `[DOC-XXXXX](https://ca-il-jira.il.cyber-ark.com:8443/browse/DOC-XXXXX)`
    - All `CROSS-XXXX` keys → `[CROSS-XXXX](https://ca-il-jira.il.cyber-ark.com:8443/browse/CROSS-XXXX)`
@@ -114,6 +125,7 @@ When the user says "we added tickets DOC-XXXXX and DOC-XXXXX":
 - [ ] Fetch each from Jira (Step 2)
 - [ ] In canvas: replace matching `NEW-XX` in `programTickets[]`; flip `driverRows[]` entry to `covered`
 - [ ] In canvas: update pill counts and callout summary
+- [ ] Re-run `deploy-canvases.ps1`
 - [ ] Write new markdown version (Step 4)
 - [ ] Publish to Confluence (Step 5)
 - [ ] Update metadata JSON (Step 6)

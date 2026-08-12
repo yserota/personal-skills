@@ -24,9 +24,9 @@ import {
 // To refresh: open a new chat in the day-manager project and type /manage-my-day
 
 const CONTENT = {
-  date: "Tuesday, August 11, 2026",
-  generatedAt: "08:05",
-  stats: { emails: 12, events: 4, actions: 7 },
+  date: "Wednesday, August 12, 2026",
+  generatedAt: "11:31",
+  stats: { emails: 36, events: 9, actions: 9 },
 
   schedule: [
     { time: "08:00 – 09:00", block: "Team standup", type: "meeting" as const },
