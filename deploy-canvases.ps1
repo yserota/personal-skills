@@ -27,7 +27,7 @@ param()
 
 $ErrorActionPreference = "Stop"
 
-# ── Paths ──────────────────────────────────────────────────────────────────────
+# -- Paths --
 $repoRoot  = $PSScriptRoot                          # script lives at repo root
 $sourceDir = Join-Path $repoRoot "canvases"
 
@@ -37,7 +37,7 @@ $normalized = $repoRoot.Replace('\', '-').Replace(':', '')
 $slug       = $normalized[0].ToString().ToLower() + $normalized.Substring(1)
 $targetDir  = Join-Path $env:USERPROFILE ".cursor\projects\$slug\canvases"
 
-# ── Validate ───────────────────────────────────────────────────────────────────
+# -- Validate --
 if (-not (Test-Path $sourceDir)) {
     Write-Error "Source directory not found: $sourceDir"
     exit 1
@@ -45,7 +45,7 @@ if (-not (Test-Path $sourceDir)) {
 
 $canvases = Get-ChildItem -Path $sourceDir -Filter "*.canvas.tsx" -File
 if ($canvases.Count -eq 0) {
-    Write-Host "No .canvas.tsx files found in $sourceDir — nothing to deploy."
+    Write-Host "No .canvas.tsx files found in $sourceDir - nothing to deploy."
     exit 0
 }
 
@@ -60,7 +60,7 @@ then re-run this script.
     exit 1
 }
 
-# ── Deploy ─────────────────────────────────────────────────────────────────────
+# -- Deploy --
 Write-Host ""
 Write-Host "Deploying $($canvases.Count) canvas(es)"
 Write-Host "  from  $sourceDir"
