@@ -59,6 +59,7 @@ function exportAll() {
   var folder = getTodayFolder();
   exportGmail(folder);
   exportCalendar(folder);
+  exportGeminiNotes(folder);
   Logger.log("Day Manager export complete for " + getTodayDateString() + ".");
 }
 
@@ -140,6 +141,70 @@ function exportGmail(folder) {
 
   writeFile(folder, "gmail.txt", lines.join("\n"));
   Logger.log("Gmail: exported " + threads.length + " threads → gmail.txt");
+}
+
+// ── Gemini Notes export ───────────────────────────────────────────────────────
+
+/**
+ * Exports meeting notes from emails labelled "Gemini" to gemini_notes.txt.
+ * Gemini in Google Meet sends structured post-meeting summaries to this label.
+ * If the label doesn't exist the file is written empty and a warning is logged.
+ */
+function exportGeminiNotes(folder) {
+  var tz     = Session.getScriptTimeZone();
+  var cutoff = new Date(Date.now() - HOURS_BACK * 3600 * 1000);
+  var now    = Utilities.formatDate(new Date(), tz, "EEEE, MMMM d yyyy");
+
+  var label = GmailApp.getUserLabelByName("Gemini");
+  if (!label) {
+    writeFile(folder, "gemini_notes.txt",
+      "GEMINI MEETING NOTES — " + now + "\n" +
+      "No 'Gemini' label found in this Gmail account.\n"
+    );
+    Logger.log("Gemini Notes: label not found — wrote empty gemini_notes.txt");
+    return;
+  }
+
+  var threads = label.getThreads(0, MAX_THREADS);
+  var recent  = threads.filter(function(t) {
+    return t.getLastMessageDate() >= cutoff;
+  });
+
+  var lines = [
+    "GEMINI MEETING NOTES — " + now,
+    "Fetched: " + recent.length + " notes (last " + HOURS_BACK + "h, max " + MAX_THREADS + ")",
+    repeat("=", 72),
+    ""
+  ];
+
+  if (recent.length === 0) {
+    lines.push("No Gemini meeting notes in the configured window.");
+  }
+
+  for (var i = 0; i < recent.length; i++) {
+    var thread   = recent[i];
+    var messages = thread.getMessages();
+    var latest   = messages[messages.length - 1];
+
+    var subject  = thread.getFirstMessageSubject() || "(no subject)";
+    var date     = Utilities.formatDate(latest.getDate(), tz, "MMM d, HH:mm");
+    var body     = latest.getPlainBody().replace(/\r\n/g, "\n").trim();
+
+    // Gemini notes are long and structured — use a larger preview than regular email
+    var preview = body.substring(0, 3000);
+    if (body.length > 3000) preview += "\n[...truncated]";
+
+    lines.push("[" + (i + 1) + "] " + subject);
+    lines.push("    Date: " + date);
+    lines.push("    ---");
+    lines.push(preview);
+    lines.push("");
+    lines.push(repeat("-", 72));
+    lines.push("");
+  }
+
+  writeFile(folder, "gemini_notes.txt", lines.join("\n"));
+  Logger.log("Gemini Notes: exported " + recent.length + " notes → gemini_notes.txt");
 }
 
 // ── Calendar export ───────────────────────────────────────────────────────────

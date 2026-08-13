@@ -23,9 +23,9 @@ import {
 // To refresh: open a new chat in the day-manager project and type /manage-my-day
 
 const CONTENT = {
-  date: "Wednesday, August 12, 2026",
-  generatedAt: "11:31",
-  stats: { emails: 36, events: 9, actions: 9 },
+  date: "Thursday, August 13, 2026",
+  generatedAt: "07:55",
+  stats: { emails: 48, events: 9, actions: 8 },
 
   schedule: [
     { time: "08:00 – 09:00", block: "Team standup", type: "meeting" as const },
@@ -60,6 +60,8 @@ const CONTENT = {
       { channel: "#engineering", text: "Sprint retro slot hasn't been picked yet. Please schedule this week." },
       { channel: "#product-updates", text: "Product review shifted to 10:30 today (was 11:00). Room B." },
     ],
+    // Populated from gemini_notes.txt when available; omit or leave empty otherwise
+    geminiNotes: [] as Array<{ meeting: string; date: string; summary: string }>,
   },
 
   prep: [
@@ -329,6 +331,7 @@ function ActionsPanel() {
 }
 
 function DigestPanel() {
+  const geminiNotes = CONTENT.digest.geminiNotes ?? [];
   return (
     <Stack gap={20}>
       <H2>Digest</H2>
@@ -365,6 +368,24 @@ function DigestPanel() {
           </Stack>
         </Stack>
       </Grid>
+      {geminiNotes.length > 0 && (
+        <CollapsibleSection title="Meeting notes" count={geminiNotes.length}>
+          <Stack gap={0}>
+            {geminiNotes.map((note, i) => (
+              <div key={i}>
+                <Stack gap={2} style={{ padding: "8px 0" }}>
+                  <Row gap={8} align="center">
+                    <Text size="small" weight="semibold">{note.meeting}</Text>
+                    <Text size="small" tone="tertiary">{note.date}</Text>
+                  </Row>
+                  <Text size="small" tone="secondary">{note.summary}</Text>
+                </Stack>
+                {i < geminiNotes.length - 1 && <Divider />}
+              </div>
+            ))}
+          </Stack>
+        </CollapsibleSection>
+      )}
     </Stack>
   );
 }
@@ -505,7 +526,7 @@ export default function DayManager() {
       <Text size="small" tone="quaternary">
         Day Manager · Refresh by running{" "}
         <Text as="span" weight="semibold" tone="quaternary">/manage-my-day</Text>{" "}
-        in Cursor · Data from Gmail, Google Calendar, Slack
+        in Cursor · Data from Gmail, Google Calendar, Slack, Gemini
       </Text>
 
     </Stack>

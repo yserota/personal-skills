@@ -40,12 +40,16 @@ DATA_DIR = Path(os.getenv("DATA_DIR", "data"))
 
 DRIVE_FILES = ["gmail.txt", "calendar.txt"]
 
+# Optional files — warn if missing but don't block the pipeline
+DRIVE_FILES_OPTIONAL = ["gemini_notes.txt"]
+
 
 def check_drive_files() -> bool:
     """
     Verify that today's Gmail and Calendar files exist in DATA_DIR.
     These are written by the Google Apps Script and synced via Google Drive for Desktop.
-    Returns True if all files are present.
+    Optional files (e.g. gemini_notes.txt) produce a warning but do not fail.
+    Returns True if all required files are present.
     """
     today = date.today().strftime("%Y-%m-%d")
     day_dir = DATA_DIR / today
@@ -57,6 +61,17 @@ def check_drive_files() -> bool:
             log.info(f"✓ Found {filepath}")
         else:
             missing.append(str(filepath))
+
+    for filename in DRIVE_FILES_OPTIONAL:
+        filepath = day_dir / filename
+        if filepath.exists() and filepath.stat().st_size > 0:
+            log.info(f"✓ Found {filepath} (optional)")
+        else:
+            log.warning(
+                f"Optional file not found: {filepath}\n"
+                f"  Gemini meeting notes will be skipped. "
+                f"Check that the Apps Script has run and Google Drive for Desktop has synced."
+            )
 
     if missing:
         log.warning(

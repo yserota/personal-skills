@@ -64,16 +64,17 @@ Check for:
 - `{day_dir}/gmail.txt`
 - `{day_dir}/calendar.txt`
 - `{day_dir}/slack.txt`
+- `{day_dir}/gemini_notes.txt` *(optional — skip silently if absent, do not warn the user)*
 
-If any file is missing, warn the user and continue with the files that exist. Never fail completely due to a single missing source.
+If any required file is missing, warn the user and continue with the files that exist. Never fail completely due to a single missing source. `gemini_notes.txt` is always optional.
 
 ### Step 2 — Read the files
 
-Read all three files in full. They are plain text, typically 5–50 KB each.
+Read all available files in full. They are plain text, typically 5–50 KB each. Read `gemini_notes.txt` only if it exists and is non-empty.
 
 ### Step 3 — Analyse with Claude
 
-Send the contents to Claude with the following system prompt template. Fill in the actual file contents between the XML tags:
+Send the contents to Claude with the following system prompt template. Fill in the actual file contents between the XML tags. Omit the `<gemini_notes>` block entirely if `gemini_notes.txt` was not available.
 
 ```
 You are a world-class executive assistant. Analyse the following inputs from today
@@ -92,6 +93,10 @@ Use the person's actual names, times, and content — do not fabricate anything.
 {slack.txt contents}
 </slack>
 
+<gemini_notes>
+{gemini_notes.txt contents — omit this block if the file was not available}
+</gemini_notes>
+
 Produce exactly four sections:
 
 ## DIGEST
@@ -99,9 +104,18 @@ Summarise the most important emails and Slack messages. For each source, give
 ≤5 bullet points. Focus on what requires attention, not FYIs. Lead each bullet
 with the sender/channel and the gist.
 
+If gemini_notes is present, also produce a GEMINI_NOTES sub-section listing each
+meeting note as a single line: "{meeting title} ({date}): {one-sentence summary of
+key outcomes or decisions}". Include ≤5 entries ordered by most recent first.
+
 ## ACTIONS
-List every concrete action item you found across all three sources. Format each as:
-- [ ] {task description} — ({source}: {sender or channel})
+List every concrete action item you found across all four sources (email, Slack,
+calendar, and gemini_notes). When extracting from Gemini notes, focus on:
+- Explicit action items or follow-ups called out in the notes
+- Commitments made during the meeting that require follow-through
+- Decisions that create downstream tasks
+Format each as:
+- [ ] {task description} — ({source}: {sender, channel, or meeting name})
 Sort by urgency: URGENT (today), IMPORTANT (this week), NICE (whenever).
 
 ## SCHEDULE
@@ -115,7 +129,9 @@ Format: HH:MM – HH:MM  Task or event name [source if not calendar]
 For each calendar event with attendees, produce a short prep note:
 - Event name + time
 - Who is attending (besides me)
-- 2–3 bullet points of context from emails/Slack related to this meeting
+- 2–3 bullet points of context from emails/Slack/Gemini notes related to this meeting.
+  If a Gemini note exists for a previous occurrence of this meeting (e.g. last week's
+  standup), pull the most relevant outcomes or open items from it.
 - 1–2 suggested agenda items or questions to raise
 If no relevant context is found for an event, say so briefly.
 ```
@@ -172,6 +188,10 @@ const CONTENT = {
     ],
     slack: [
       { channel: "#channel-name", text: "summary" },
+    ],
+    // Omit this field entirely (or set to []) if gemini_notes.txt was not available
+    geminiNotes: [
+      { meeting: "Meeting title", date: "Aug 12", summary: "one-sentence outcome" },
     ],
   },
 
