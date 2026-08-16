@@ -20,10 +20,11 @@
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-var FOLDER_NAME   = "day-manager";   // Root folder name in Google Drive
-var MAX_THREADS   = 50;              // Max Gmail threads to fetch
-var HOURS_BACK    = 24;              // How many hours back to fetch Gmail
-var TRIGGER_HOUR  = 8;               // Hour (0–23) to run the daily export
+var FOLDER_NAME          = "day-manager";   // Root folder name in Google Drive
+var MAX_THREADS          = 50;              // Max Gmail threads to fetch
+var HOURS_BACK           = 24;              // How many hours back to fetch Gmail
+var TRIGGER_HOUR         = 8;              // Hour (0–23) to run the daily export
+var GEMINI_WORK_DAYS_BACK = 3;             // How many work days back to fetch Gemini notes
 
 // ── Entry points ──────────────────────────────────────────────────────────────
 
@@ -152,8 +153,9 @@ function exportGmail(folder) {
  */
 function exportGeminiNotes(folder) {
   var tz     = Session.getScriptTimeZone();
-  var cutoff = new Date(Date.now() - HOURS_BACK * 3600 * 1000);
+  var cutoff = getWorkDaysCutoff(GEMINI_WORK_DAYS_BACK);
   var now    = Utilities.formatDate(new Date(), tz, "EEEE, MMMM d yyyy");
+  var cutoffStr = Utilities.formatDate(cutoff, tz, "EEE MMM d");
 
   var label = GmailApp.getUserLabelByName("Gemini");
   if (!label) {
@@ -172,7 +174,7 @@ function exportGeminiNotes(folder) {
 
   var lines = [
     "GEMINI MEETING NOTES — " + now,
-    "Fetched: " + recent.length + " notes (last " + HOURS_BACK + "h, max " + MAX_THREADS + ")",
+    "Fetched: " + recent.length + " notes (last " + GEMINI_WORK_DAYS_BACK + " work days since " + cutoffStr + ", max " + MAX_THREADS + ")",
     repeat("=", 72),
     ""
   ];
@@ -292,4 +294,24 @@ function repeat(char, n) {
   var s = "";
   for (var i = 0; i < n; i++) s += char;
   return s;
+}
+
+/**
+ * Returns a Date set to midnight at the start of the work day that is
+ * workDaysBack business days before today, skipping Saturdays and Sundays.
+ * Examples (today = Monday): workDaysBack=3 → previous Wednesday.
+ *           (today = Tuesday): workDaysBack=3 → previous Thursday.
+ */
+function getWorkDaysCutoff(workDaysBack) {
+  var date = new Date();
+  var counted = 0;
+  while (counted < workDaysBack) {
+    date.setDate(date.getDate() - 1);
+    var dow = date.getDay(); // 0 = Sunday, 6 = Saturday
+    if (dow !== 0 && dow !== 6) {
+      counted++;
+    }
+  }
+  date.setHours(0, 0, 0, 0);
+  return date;
 }
