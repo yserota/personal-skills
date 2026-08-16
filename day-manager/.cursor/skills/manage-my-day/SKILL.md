@@ -72,6 +72,48 @@ If any required file is missing, warn the user and continue with the files that 
 
 Read all available files in full. They are plain text, typically 5–50 KB each. Read `gemini_notes.txt` only if it exists and is non-empty.
 
+### Step 2.5 — Enrich with Jira (and Confluence if available)
+
+After reading the data files, query Jira via the `jira_search` MCP tool to add live ticket context that the ingestion scripts don't capture. Run these queries in parallel before sending to Claude:
+
+**Always run:**
+
+```
+# Team workload snapshot — in-progress and under-review DOC tickets (for standup context)
+jql: project = DOC AND status in ("In Progress", "Under Review") ORDER BY priority ASC, updated DESC
+limit: 10, fields: summary,status,assignee,priority,updated
+```
+
+```
+# Recently updated open tickets across the team (past 7 days)
+jql: project = DOC AND updated >= -7d AND statusCategory != Done ORDER BY updated DESC
+limit: 10, fields: summary,status,assignee,priority,updated,issuetype
+```
+
+**For each calendar event with named attendees** whose Jira username can be inferred (use the email prefix, e.g. `rfox` from `rfox@paloaltonetworks.com` — note that CyberArk team members use @cyberark.com emails while PANW-side attendees use @paloaltonetworks.com):
+
+```
+# Per-attendee open tickets (CyberArk Jira users only)
+jql: assignee = "{username}" AND statusCategory != Done AND project = DOC ORDER BY updated DESC
+limit: 5, fields: summary,status,priority,updated
+```
+
+Skip per-attendee queries for @paloaltonetworks.com attendees — they use a separate PANW Jira instance not connected to this broker.
+
+**Try Confluence search** (may return 404 on the on-premise instance — skip silently if it fails, do not warn the user):
+
+```
+# Search for pages related to each meeting topic
+confluence_search(query="<meeting name>", limit=3)
+```
+
+**Incorporate Jira results into Claude's context** by appending a `<jira>` block to the analysis prompt (see Step 3). Format ticket lists as:
+```
+- {KEY}: {summary} — {assignee} ({status}, {priority})
+```
+
+Group by assignee when surfacing in prep notes. Use ticket keys (e.g. DOC-24223) as references so the user can click through.
+
 ### Step 3 — Analyse with Claude
 
 Send the contents to Claude with the following system prompt template. Fill in the actual file contents between the XML tags. Omit the `<gemini_notes>` block entirely if `gemini_notes.txt` was not available.
@@ -96,6 +138,16 @@ Use the person's actual names, times, and content — do not fabricate anything.
 <gemini_notes>
 {gemini_notes.txt contents — omit this block if the file was not available}
 </gemini_notes>
+
+<jira>
+{Jira ticket data from Step 2.5 — omit this block if no Jira data was retrieved}
+
+Team tickets in progress:
+{list of in-progress/under-review DOC tickets with assignee, key, status, priority}
+
+Per-meeting attendee tickets (where available):
+{for each meeting: list the open tickets for each attendee}
+</jira>
 
 Produce exactly four sections:
 
@@ -129,7 +181,9 @@ Format: HH:MM – HH:MM  Task or event name [source if not calendar]
 For each calendar event with attendees, produce a short prep note:
 - Event name + time
 - Who is attending (besides me)
-- 2–3 bullet points of context from emails/Slack/Gemini notes related to this meeting.
+- 2–3 bullet points of context from emails/Slack/Gemini notes/Jira related to this meeting.
+  For standups: list the 2–3 most urgent open tickets from the Jira team snapshot.
+  For 1:1s: list the attendee's open tickets (if Jira data is available for them).
   If a Gemini note exists for a previous occurrence of this meeting (e.g. last week's
   standup), pull the most relevant outcomes or open items from it.
 - 1–2 suggested agenda items or questions to raise
@@ -234,3 +288,11 @@ const CONTENT = {
 - `scripts/ingest_slack.py` — Slack only
 - `scheduler/run_ingest.ps1` — Task Scheduler wrapper (runs automatically at 08:00)
 - `SETUP.md` — auth configuration guide
+
+## Jira integration notes
+
+- Jira (`ca-il-jira.il.cyber-ark.com:8443`) is available via the `jira_search` MCP tool through the policy broker. No extra setup needed.
+- The primary project for TW team tickets is `DOC`. Use `project = DOC` as the default filter.
+- CyberArk Jira usernames match email prefixes for @cyberark.com staff (e.g. `rfox`, `sgoodman`, `okenet`). PANW-side attendees (@paloaltonetworks.com) use a separate Jira instance — skip per-attendee lookups for them.
+- Confluence search (`confluence_search`) currently returns HTTP 404 on the on-premise instance. Skip silently; do not surface the error to the user.
+- Yvonne's own tickets: her Jira account (if any) is not on this instance. Use `reporter` or `watcher` queries with her CyberArk identity if needed.
