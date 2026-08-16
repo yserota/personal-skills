@@ -19,76 +19,92 @@ import {
 } from "cursor/canvas";
 
 // ── CONTENT ─────────────────────────────────────────────────────────────────
-// This object is updated by the manage-my-day Cursor skill.
-// To refresh: open a new chat in the day-manager project and type /manage-my-day
+// Updated by manage-my-day on Sunday, August 16, 2026
 
 const CONTENT = {
-  date: "Thursday, August 13, 2026",
-  generatedAt: "07:55",
-  stats: { emails: 48, events: 9, actions: 8 },
+  date: "Sunday, August 16, 2026",
+  generatedAt: "07:21",
+  stats: { emails: 3, events: 5, actions: 3 },
 
   schedule: [
-    { time: "08:00 – 09:00", block: "Team standup", type: "meeting" as const },
-    { time: "09:00 – 10:30", block: "Work block: DOC-1234 first draft (due today)", type: "work" as const },
-    { time: "10:30 – 11:00", block: "Product review (moved from 11:00 — Slack: #product-updates)", type: "meeting" as const },
-    { time: "11:00 – 12:30", block: "Work block: PR #567 review + reply to Ofrit", type: "work" as const },
-    { time: "12:30 – 13:30", block: "Lunch", type: "break" as const },
-    { time: "13:30 – 14:00", block: "1:1 with manager", type: "meeting" as const },
-    { time: "14:00 – 16:00", block: "Work block: Quarterly report", type: "work" as const },
-    { time: "16:00 – 17:00", block: "Buffer — async reviews / Slack catch-up", type: "work" as const },
+    { time: "08:00 – 08:10", block: "Wegovy shot", type: "break" as const },
+    { time: "09:00 – 09:30", block: "Standup WFH", type: "meeting" as const },
+    { time: "09:30 – 11:30", block: "Focus time — clear backlog, priorities for the week", type: "work" as const },
+    { time: "11:30 – 12:00", block: "Work block — prep for Yvonne-Lili weekly", type: "work" as const },
+    { time: "12:00 – 12:40", block: "Yvonne - Lili weekly", type: "meeting" as const },
+    { time: "12:40 – 14:00", block: "Work block — post-meeting follow-ups, prep for afternoon meetings", type: "work" as const },
+    { time: "14:00 – 14:25", block: "Danielle : Yvonne Weekly sync", type: "meeting" as const },
+    { time: "14:30 – 15:30", block: "R&D automation plan", type: "meeting" as const },
   ],
 
   actions: [
-    { id: "a1", content: "URGENT · Review PR #567 before merge window at 13:00 (Email: Sarah)", status: "pending" as const },
-    { id: "a2", content: "URGENT · Reply to Ofrit with Q3 delivery dates by EOD (Email: Ofrit)", status: "pending" as const },
-    { id: "a3", content: "URGENT · Submit DOC-1234 first draft — due today (Jira)", status: "pending" as const },
-    { id: "a4", content: "IMPORTANT · Update onboarding doc with new screenshots (Slack: #docs-team)", status: "pending" as const },
-    { id: "a5", content: "IMPORTANT · Schedule sprint retro for this week (Slack: #engineering)", status: "pending" as const },
-    { id: "a6", content: "NICE · Read new product spec v2.3 before Wednesday (Email: David)", status: "pending" as const },
-    { id: "a7", content: "NICE · Confirm staging environment access request (Email: IT team)", status: "pending" as const },
+    { id: "a1", content: "IMPORTANT · Investigate new Idira Identity user account created for you (izomaker2.integration-cyberark.cloud) — verify this is expected system onboarding before clicking the login link (Email: Idira Account Management)", status: "pending" as const },
+    { id: "a2", content: "NICE · Review 2 quarantined emails in PANW Proofpoint digest — log in to release or block (Email: Proofpoint)", status: "pending" as const },
+    { id: "a3", content: "NICE · Review 1 quarantined email in CyberArk spam summary (Email: CyberArk Proofpoint)", status: "pending" as const },
   ],
 
   digest: {
     email: [
-      { from: "Sarah", time: "10:45", text: "PR #567 ready for review — needs approval before merge window closes at 13:00." },
-      { from: "Ofrit", time: "09:30", text: "Requesting Q3 delivery dates by EOD for exec review. Please confirm scope." },
-      { from: "David", time: "yesterday", text: "New product spec v2.3 published to Confluence. Review requested before Wednesday." },
-      { from: "IT Team", time: "08:00", text: "Staging environment access request is pending your email confirmation." },
+      { from: "Idira Account Management", time: "06:56", text: "New Idira Identity user account provisioned at izomaker2.integration-cyberark.cloud — invited by your system administrator. Verify expected before logging in." },
+      { from: "Proofpoint (PANW)", time: "17:00 yesterday", text: "2 emails quarantined in your PANW Proofpoint digest. Review and release or block as appropriate." },
+      { from: "Proofpoint (CyberArk)", time: "12:00 yesterday", text: "1 email in CyberArk spam quarantine. Log in to take action." },
     ],
     slack: [
-      { channel: "#docs-team", text: "Onboarding doc screenshots are out of date. Action assigned to you." },
-      { channel: "#engineering", text: "Sprint retro slot hasn't been picked yet. Please schedule this week." },
-      { channel: "#product-updates", text: "Product review shifted to 10:30 today (was 11:00). Room B." },
+      { channel: "No Slack data today", text: "Slack ingest did not run — no channel highlights available. Check Slack directly for any weekend messages." },
     ],
-    // Populated from gemini_notes.txt when available; omit or leave empty otherwise
-    geminiNotes: [] as Array<{ meeting: string; date: string; summary: string }>,
   },
 
   prep: [
     {
-      event: "Team standup",
-      time: "08:00 – 09:00",
-      attendees: "Full team",
+      event: "Standup WFH",
+      time: "09:00 – 09:30",
+      attendees: "rfox, sgoodman, dbiber, sfinkelstein, avinokoor, slorber, vgilin, okenetguler, kreuveny, ybisk, malawrence, rteller, lamitai, jwexler, bskelker, ylevin",
       context: [
-        "DOC-1234 first draft is due today — may need to flag as at-risk.",
-        "Onboarding screenshots need an owner — good to raise now.",
+        "Oded and Ofrit are both on PTO today — expect a lighter attendance than usual.",
+        "No Slack or email context this morning to pre-populate agenda topics.",
       ],
       questions: [
-        "Who is picking up the onboarding screenshot update?",
-        "Any blockers on sprint goals before retro?",
+        "Any blockers or carry-over items from last week to surface?",
+        "Does anyone need context on the R&D automation plan session this afternoon?",
       ],
     },
     {
-      event: "1:1 with manager",
-      time: "13:30 – 14:00",
-      attendees: "Manager",
+      event: "Yvonne - Lili weekly",
+      time: "12:00 – 12:40",
+      attendees: "Lili (one-on-one)",
       context: [
-        "Ofrit's Q3 delivery date request — align on what to commit vs push.",
-        "PR #567 review is creating workload pressure on your own tasks.",
+        "Weekly 1:1. No emails or Slack threads from Lili in the last 24 hours.",
+        "No Gemini notes found for prior occurrences of this meeting.",
       ],
       questions: [
-        "Q3 scope: what can we protect vs deprioritize?",
-        "PR review load — is this on my plate long-term?",
+        "What are Lili's priorities and blockers heading into the week?",
+        "Any cross-functional dependencies or team dynamics to address?",
+      ],
+    },
+    {
+      event: "Danielle : Yvonne Weekly sync",
+      time: "14:00 – 14:25",
+      attendees: "Danielle Biber (dbiber)",
+      context: [
+        "Weekly sync. No new emails from Danielle in the last 24 hours.",
+        "Slack unavailable — ask Danielle at the top of the call if anything came up over the weekend.",
+      ],
+      questions: [
+        "Any open blockers or items carrying over from last week?",
+        "Status on current deliverables and week priorities?",
+      ],
+    },
+    {
+      event: "R&D automation plan",
+      time: "14:30 – 15:30",
+      attendees: "Seran (seran@), Oblum (oblum@), Vgilin (vgilin@)",
+      context: [
+        "One-hour planning session — longer than a typical sync, suggesting a substantive agenda around R&D automation direction.",
+        "No email or Slack context available to determine scope. Review any prior Confluence pages or notes before joining.",
+      ],
+      questions: [
+        "What is TW's role in the R&D automation plan, and what decisions require TW input?",
+        "Are there documentation or tooling implications for the TW team from the automation strategy?",
       ],
     },
   ],
