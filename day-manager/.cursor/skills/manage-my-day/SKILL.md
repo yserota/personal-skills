@@ -100,12 +100,14 @@ limit: 5, fields: summary,status,priority,updated
 
 Skip per-attendee queries for @paloaltonetworks.com attendees — they use a separate PANW Jira instance not connected to this broker.
 
-**Try Confluence search** (may return 404 on the on-premise instance — skip silently if it fails, do not warn the user):
+**Always run Confluence search** for each calendar event with a meaningful title. The on-premise instance (`ca-il-confluence.il.cyber-ark.com`) is reachable via the policy broker. Skip all-day or logistical events (PTO, Office, Drive home). Run one query per substantive meeting, in parallel:
 
 ```
 # Search for pages related to each meeting topic
-confluence_search(query="<meeting name>", limit=3)
+confluence_search(query="<meeting name or key topic>", limit=3)
 ```
+
+If an individual query errors, skip that meeting silently and continue. Do not warn the user.
 
 **Incorporate Jira results into Claude's context** by appending a `<jira>` block to the analysis prompt (see Step 3). Format ticket lists as:
 ```
@@ -113,6 +115,13 @@ confluence_search(query="<meeting name>", limit=3)
 ```
 
 Group by assignee when surfacing in prep notes. Use ticket keys (e.g. DOC-24223) as references so the user can click through.
+
+**Incorporate Confluence results** by appending a `<confluence>` block to the analysis prompt (see Step 3). Format page results as:
+```
+- [{title}]({url}): {one-line summary from the content snippet}
+```
+
+Group by meeting topic. Surface the most relevant page(s) per meeting in the PREP section.
 
 ### Step 3 — Analyse with Claude
 
@@ -148,6 +157,13 @@ Team tickets in progress:
 Per-meeting attendee tickets (where available):
 {for each meeting: list the open tickets for each attendee}
 </jira>
+
+<confluence>
+{Confluence page results from Step 2.5, grouped by meeting topic — omit this block if no results were retrieved}
+
+Per-meeting context pages:
+{for each meeting: list relevant page titles, URLs, and one-line summaries of the content snippet}
+</confluence>
 
 Produce exactly four sections:
 
@@ -295,5 +311,5 @@ const CONTENT = {
 - Jira (`ca-il-jira.il.cyber-ark.com:8443`) is available via the `jira_search` MCP tool through the policy broker. No extra setup needed.
 - The primary project for TW team tickets is `DOC`. Use `project = DOC` as the default filter.
 - CyberArk Jira usernames match email prefixes for @cyberark.com staff (e.g. `rfox`, `sgoodman`, `okenet`). PANW-side attendees (@paloaltonetworks.com) use a separate Jira instance — skip per-attendee lookups for them.
-- Confluence search (`confluence_search`) currently returns HTTP 404 on the on-premise instance. Skip silently; do not surface the error to the user.
+- Confluence search (`confluence_search`) is available and reachable at `ca-il-confluence.il.cyber-ark.com` via the policy broker. Always query it per meeting topic in Step 2.5. If an individual query errors, skip that meeting silently.
 - Yvonne's own tickets: her Jira account (if any) is not on this instance. Use `reporter` or `watcher` queries with her CyberArk identity if needed.
