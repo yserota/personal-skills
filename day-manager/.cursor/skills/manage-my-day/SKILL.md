@@ -214,8 +214,9 @@ If unsure of the slug, list `~/.cursor/projects/` (macOS/Linux) or
 `%USERPROFILE%\.cursor\projects\` (Windows) and pick the entry whose name matches
 this project's path.
 
-A template copy also lives at `day_manager.canvas.tsx` in the project root — use it
-as the base if the canvases copy doesn't exist yet.
+A template copy lives at `day_manager.canvas.TEMPLATE.tsx` in the project root —
+use it as a read-only base if the canvases copy doesn't exist yet. **Never write
+back to the template file.**
 
 The canvas file contains a `CONTENT` constant near the top. Update the following fields
 with today's real data from Claude's analysis:

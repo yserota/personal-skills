@@ -195,7 +195,26 @@ Open Cursor and open this folder as your workspace:
 The skill is defined in `.cursor/skills/manage-my-day/SKILL.md` and is
 automatically available once the folder is open.
 
-### 8b. Run the skill
+### 8b. Set up the canvas
+
+The skill renders output as a live Cursor canvas. A template with the full UI
+structure is included in the repo at `day_manager.canvas.TEMPLATE.tsx`.
+
+**You do not need to copy or edit this file.** On the first run of `/manage-my-day`,
+the skill reads the template, fills it with today's data, and writes the live canvas to
+Cursor's managed canvases folder:
+
+```
+%USERPROFILE%\.cursor\projects\<workspace-slug>\canvases\day-manager.canvas.tsx
+```
+
+That path is outside the repo, so the generated daily canvas is never committed to git.
+The template in the repo stays untouched and serves as the base for future runs.
+
+> If the canvas does not open after running the skill, check that you opened the
+> `day-manager` folder directly as your Cursor workspace (not a parent folder).
+
+### 8c. Run the skill
 
 After the morning ingestion has run (Apps Script + `ingest_all.py`), open a new
 Cursor chat and type:
@@ -213,14 +232,14 @@ Cursor will invoke the skill, which:
    - **Digest** — key highlights from email and Slack
    - **Prep** — context and suggested questions for each meeting
 
-### 8c. Daily workflow
+### 8d. Daily workflow
 
 Each morning:
 1. Apps Script runs at 8:00 AM → writes `gmail.txt` and `calendar.txt` to Drive
 2. Task Scheduler runs at 8:05 AM → fetches Slack, verifies all three files
 3. Open Cursor → new chat → `/manage-my-day`
 
-### 8d. Troubleshooting the skill
+### 8e. Troubleshooting the skill
 
 **"Gmail and Calendar data are missing"** — the skill is looking in the wrong folder.
 Make sure `DATA_DIR` in `.env` points to your Google Drive sync path:

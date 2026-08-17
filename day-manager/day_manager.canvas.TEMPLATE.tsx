@@ -19,38 +19,57 @@ import {
 } from "cursor/canvas";
 
 // ── CONTENT ─────────────────────────────────────────────────────────────────
-// Updated by manage-my-day on Sunday, August 16, 2026 (refreshed 12:04)
+// Updated by manage-my-day on Sunday, August 16, 2026 (refreshed 13:38)
 
 const CONTENT = {
   date: "Sunday, August 16, 2026",
-  generatedAt: "12:04",
-  stats: { emails: 3, events: 5, actions: 3 },
+  generatedAt: "13:38",
+  stats: { emails: 25, events: 6, actions: 14 },
 
   schedule: [
     { time: "08:00 – 08:10", block: "Wegovy shot", type: "break" as const },
     { time: "09:00 – 09:30", block: "Standup WFH", type: "meeting" as const },
-    { time: "09:30 – 11:30", block: "Focus time — clear backlog, priorities for the week", type: "work" as const },
-    { time: "11:30 – 12:00", block: "Work block — prep for Yvonne-Lili weekly", type: "work" as const },
+    { time: "09:30 – 11:30", block: "Focus time", type: "work" as const },
     { time: "12:00 – 12:40", block: "Yvonne - Lili weekly", type: "meeting" as const },
-    { time: "12:40 – 14:00", block: "Work block — post-meeting follow-ups, prep for afternoon meetings", type: "work" as const },
+    { time: "12:40 – 14:00", block: "Work block — GitHub approval, post-Lili action items", type: "work" as const },
     { time: "14:00 – 14:25", block: "Danielle : Yvonne Weekly sync", type: "meeting" as const },
     { time: "14:30 – 15:30", block: "R&D automation plan", type: "meeting" as const },
   ],
 
   actions: [
-    { id: "a1", content: "IMPORTANT · Investigate new Idira Identity user account created for you (izomaker2.integration-cyberark.cloud) — verify this is expected system onboarding before clicking the login link (Email: Idira Account Management)", status: "pending" as const },
-    { id: "a2", content: "NICE · Review 2 quarantined emails in PANW Proofpoint digest — log in to release or block (Email: Proofpoint)", status: "pending" as const },
-    { id: "a3", content: "NICE · Review 1 quarantined email in CyberArk spam summary (Email: CyberArk Proofpoint)", status: "pending" as const },
+    { id: "a1", content: "URGENT · Approve RITM0164045 — Alon Arad (Sr. Staff Engineer) requests GitHub Enterprise access to tdocs org (Developer role, pending >2 days since Aug 13) (Email: IT Service Desk)", status: "pending" as const },
+    { id: "a2", content: "IMPORTANT · Share latest AI pipeline documentation output link to Lili (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a3", content: "IMPORTANT · Add Lili to the Aon integration team meeting (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a4", content: "IMPORTANT · Notify Kora team of upcoming Flare→Markdown format changes to allow testing (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a5", content: "IMPORTANT · Coordinate with Vita on Kora communication plan (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a6", content: "IMPORTANT · Write updated job descriptions for TW technical content roles (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a7", content: "IMPORTANT · Share Yonyi adoption dashboard links to Lili (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a8", content: "IMPORTANT · Find EPM release notes coverage for Steve next week — Adam to coordinate (Gemini: Standup Aug 16)", status: "pending" as const },
+    { id: "a9", content: "IMPORTANT · Enter all manager performance reviews in Workday — deadline Sep 15 (Gemini: Adam/Yvonne 1:1 Aug 13)", status: "pending" as const },
+    { id: "a10", content: "IMPORTANT · Follow up with Nicolas Malbranche on Salesforce Case 04181846 — Zero Touch PKI docs waiting on TW (Email: Salesforce)", status: "pending" as const },
+    { id: "a11", content: "IMPORTANT · Meet with Meta to resolve priority source inconsistencies (Gemini: Adam/Yvonne 1:1 Aug 13)", status: "pending" as const },
+    { id: "a12", content: "NICE · Present Claude / Day Manager AI tool at the next guild meeting (Gemini: Standup Aug 12)", status: "pending" as const },
+    { id: "a13", content: "NICE · Arrange Soda demo with Steve for the team (Gemini: Standup Aug 13)", status: "pending" as const },
+    { id: "a14", content: "NICE · Clarify AM MCP server status with Anat; escalate to Director of PM if unresolved (Gemini: Adam/Yvonne 1:1 Aug 13)", status: "pending" as const },
   ],
 
   digest: {
     email: [
-      { from: "Idira Account Management", time: "06:56", text: "New Idira Identity user account provisioned at izomaker2.integration-cyberark.cloud — invited by your system administrator. Verify expected before logging in." },
-      { from: "Proofpoint (PANW)", time: "17:00 yesterday", text: "2 emails quarantined in your PANW Proofpoint digest. Review and release or block as appropriate." },
-      { from: "Proofpoint (CyberArk)", time: "12:00 yesterday", text: "1 email in CyberArk spam quarantine. Log in to take action." },
+      { from: "IT Service Desk", time: "11:43", text: "RITM0164045 pending approval >2 days — Alon Arad (Sr. Staff Engineer) requests GitHub Enterprise access to tdocs org (Developer role) to review TW pages. Needs your response." },
+      { from: "Confluence (CyberArk)", time: "09:00", text: "2 new edits on 'Danielle Biber 1:1 Syncs' page this morning — she likely prepped the agenda ahead of your 14:00 sync." },
+      { from: "Elad Gilat", time: "12:07", text: "PM AI Transformation status (Aug 9–13): 48 of 110 PMs onboarded. Peretz Regev flagged this as low for a top-priority effort and wants all 110 by September." },
+      { from: "Nir Feldman", time: "10:43", text: "FY 2027 CI sign-off Session 2 (Aug 20) canceled — too many PTOs. Rescheduled to Sep 3, 4–5pm with agenda attached." },
+      { from: "Salesforce", time: "09:00", text: "1 case waiting on Technical Writers: Zero Touch PKI (Machine Identity Security / Venafi), Case 04181846, owned by Nicolas Malbranche." },
     ],
     slack: [
-      { channel: "No Slack data today", text: "Slack ingest did not run — no channel highlights available. Check Slack directly for any weekend messages." },
+      { channel: "No Slack data today", text: "Slack ingest did not run — no channel highlights available. Check Slack directly for any messages since Friday." },
+    ],
+    geminiNotes: [
+      { meeting: "Yvonne - Lili weekly", date: "Aug 16", summary: "AI pipeline targeting 2x throughput and October Flare→Markdown completion; 8 action items for Yvonne including Kora team notification, TW job descriptions, and Aon integration invite." },
+      { meeting: "Standup WFH", date: "Aug 16", summary: "EPM release coverage needed for Steve next week; Privilege Cloud Centralization rescheduled; Rick to process 14 open tickets pending approval." },
+      { meeting: "Adam / Yvonne 1:1", date: "Aug 13", summary: "Perf reviews due Sep 15 in Workday; AM MCP server needs clarification with Anat; escalate unclear deadline to PM Director." },
+      { meeting: "Yvonne / Shimrit", date: "Aug 13", summary: "Sensitive org change discussion rescheduled to Sunday — strategy to frame as industry-wide shift with financial support offered." },
+      { meeting: "Standup WFH", date: "Aug 13", summary: "Kate to reinstall Cursor/MCP broker; Yvonne to share Day Manager AI tool with org; Danielle to audit stale PRs before Markdown switch." },
     ],
   },
 
@@ -60,53 +79,49 @@ const CONTENT = {
       time: "09:00 – 09:30",
       attendees: "rfox, sgoodman, dbiber, sfinkelstein, avinokoor, slorber, vgilin, okenetguler, kreuveny, ybisk, malawrence, rteller, lamitai, jwexler, bskelker, ylevin",
       context: [
-        "Oded and Ofrit are both on PTO today — expect lighter attendance. (Jira) Active hottest tickets: DOC-24223 Steve Goodman publishing EPM 26.8.1 (Highest, In Progress); DOC-24342 Rick Fox Session Monitoring What's New (Highest, Under Review); DOC-22295 Judy Wexler SecHub onboarding template (Highest, Open — may need unblocking).",
-        "(Jira) Rivka Teller has DOC-24162 MkDocs deep-link tab issue Under Review. Orna Kenet has 4 High-priority tasks still open/Ready for Implementation (H2P docs MS3, PrivCloud, Extensions VS Code). Shuli Finkelstein has DOC-23901 CDS API update In Progress.",
-        "272 open DOC tickets total; 271 in In Progress or Under Review as of this morning.",
+        "Completed. Gemini notes: EPM release coverage coordination — Adam to find coverage for Steve's release notes and patches next week due to planned absences.",
+        "Privilege Cloud Centralization project officially rescheduled. Rick has 14 open tickets needing approval reviews before publishing can proceed.",
+        "Yonit to meet Vita about workload and deadlines. Shuli to ping Yonit about agentic onboarding and Kora integration timing.",
       ],
-      questions: [
-        "Steve — what's the status on EPM 26.8.1 publish? Any blockers before it ships?",
-        "Judy — DOC-22295 SecHub onboarding (Highest) is still Open — what does it need to move forward?",
-      ],
+      questions: [],
     },
     {
       event: "Yvonne - Lili weekly",
       time: "12:00 – 12:40",
-      attendees: "Lili (one-on-one)",
+      attendees: "Lili Levy (lillevy@paloaltonetworks.com)",
       context: [
-        "Weekly 1:1. No emails or Slack threads from Lili in the last 24 hours.",
-        "No Gemini notes found for prior occurrences of this meeting.",
+        "Completed. AI pipeline strategy: proposed pipeline aims to double throughput and cut cycle times by integrating R&D workflows while maintaining human review.",
+        "Flare to Markdown migration progressing toward October completion; tagging excluded from the initial production phase to reduce complexity.",
+        "8 action items assigned to Yvonne — all captured in Actions tab. Lili to review the Application Development Lifecycle definition document.",
       ],
-      questions: [
-        "What are Lili's priorities and blockers heading into the week?",
-        "Any cross-functional dependencies or team dynamics to address?",
-      ],
+      questions: [],
     },
     {
       event: "Danielle : Yvonne Weekly sync",
       time: "14:00 – 14:25",
       attendees: "Danielle Biber (dbiber@paloaltonetworks.com)",
       context: [
-        "Weekly sync. No new emails from Danielle in the last 24 hours.",
-        "Danielle is on the PANW side — her Jira tickets are in a separate instance not connected to this broker. Slack unavailable today.",
+        "Danielle edited the 1:1 Confluence page twice this morning (09:00) — she came prepared with agenda items.",
+        "Today she deleted two Asana projects: 'Docs rebranding' and 'Onboarding TWs template' — worth understanding if this was planned cleanup or migration to Jira.",
+        "From Aug 16 standup: Danielle to meet Shuli and Orna separately; sprint planning to coordinate with Rick. From Aug 13 standup: stale PR audit before Markdown switch; persona placeholders needed for all writers.",
       ],
       questions: [
-        "Any open blockers or items carrying over from last week?",
-        "Status on current deliverables and week priorities?",
+        "What is the status on the stale PR audit ahead of the Markdown migration?",
+        "Were the Asana project deletions ('Docs rebranding', 'Onboarding TWs template') intentional — migrating to Jira or just closing out completed work?",
       ],
     },
     {
       event: "R&D automation plan",
       time: "14:30 – 15:30",
-      attendees: "Seran (seran@paloaltonetworks.com), Oblum (oblum@paloaltonetworks.com), Vgilin (vgilin@paloaltonetworks.com)",
+      attendees: "Seran (seran@paloaltonetworks.com), Orly Blum (oblum@paloaltonetworks.com), Vita Gilin (vgilin@paloaltonetworks.com)",
       context: [
-        "(Jira) vgilin owns 16 open DOC tickets, all under the SOH workstream — most relevant: DOC-22980 Microcopy Terminology & Style Guide (High, Open), DOC-24246 RAG-Ready Content (Open), DOC-22822 AI Adoption & Enablement (Open), DOC-22987 Migration to MkDocs (Open). These suggest the session will touch TW tooling, content pipeline, and AI-readiness.",
-        "seran and oblum have no DOC Jira tickets — they are R&D-side. vgilin is the TW bridge in this meeting.",
-        "One hour is long for a planning sync — expect substantial agenda around tooling direction, ownership boundaries, or timeline.",
+        "Context from today's Lili meeting: TW's AI pipeline aims to double throughput and integrate R&D workflows — this likely directly overlaps with what R&D is planning on their side.",
+        "Vita is the TW bridge for this session. She is also scheduled for a Flare→Markdown migration touchpoint (Aug 25) and the Metadata & Publication Lifecycle session (Aug 17 in-office).",
+        "Seran and Orly are R&D-side with no TW Jira tickets. One hour signals a substantive agenda around tooling direction, ownership boundaries, or timeline alignment.",
       ],
       questions: [
-        "What is TW's ownership scope in the automation plan — vgilin's SOH tickets or broader?",
-        "DOC-22987 MkDocs migration and DOC-24246 RAG-Ready Content: are these dependencies or inputs to the R&D automation plan being discussed today?",
+        "What is TW's ownership scope in the automation plan — Vita's SOH workstream only, or broader TW involvement?",
+        "How does the R&D automation plan connect to the Flare→Markdown migration and the AI documentation pipeline discussed with Lili today?",
       ],
     },
   ],
