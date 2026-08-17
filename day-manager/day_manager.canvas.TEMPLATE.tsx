@@ -19,76 +19,109 @@ import {
 } from "cursor/canvas";
 
 // ── CONTENT ─────────────────────────────────────────────────────────────────
-// This object is updated by the manage-my-day Cursor skill.
-// To refresh: open a new chat in the day-manager project and type /manage-my-day
+// Updated by manage-my-day on Sunday, August 16, 2026 (refreshed 13:38)
 
 const CONTENT = {
-  date: "Thursday, August 13, 2026",
-  generatedAt: "07:55",
-  stats: { emails: 48, events: 9, actions: 8 },
+  date: "Sunday, August 16, 2026",
+  generatedAt: "13:38",
+  stats: { emails: 25, events: 6, actions: 14 },
 
   schedule: [
-    { time: "08:00 – 09:00", block: "Team standup", type: "meeting" as const },
-    { time: "09:00 – 10:30", block: "Work block: DOC-1234 first draft (due today)", type: "work" as const },
-    { time: "10:30 – 11:00", block: "Product review (moved from 11:00 — Slack: #product-updates)", type: "meeting" as const },
-    { time: "11:00 – 12:30", block: "Work block: PR #567 review + reply to Ofrit", type: "work" as const },
-    { time: "12:30 – 13:30", block: "Lunch", type: "break" as const },
-    { time: "13:30 – 14:00", block: "1:1 with manager", type: "meeting" as const },
-    { time: "14:00 – 16:00", block: "Work block: Quarterly report", type: "work" as const },
-    { time: "16:00 – 17:00", block: "Buffer — async reviews / Slack catch-up", type: "work" as const },
+    { time: "08:00 – 08:10", block: "Wegovy shot", type: "break" as const },
+    { time: "09:00 – 09:30", block: "Standup WFH", type: "meeting" as const },
+    { time: "09:30 – 11:30", block: "Focus time", type: "work" as const },
+    { time: "12:00 – 12:40", block: "Yvonne - Lili weekly", type: "meeting" as const },
+    { time: "12:40 – 14:00", block: "Work block — GitHub approval, post-Lili action items", type: "work" as const },
+    { time: "14:00 – 14:25", block: "Danielle : Yvonne Weekly sync", type: "meeting" as const },
+    { time: "14:30 – 15:30", block: "R&D automation plan", type: "meeting" as const },
   ],
 
   actions: [
-    { id: "a1", content: "URGENT · Review PR #567 before merge window at 13:00 (Email: Sarah)", status: "pending" as const },
-    { id: "a2", content: "URGENT · Reply to Ofrit with Q3 delivery dates by EOD (Email: Ofrit)", status: "pending" as const },
-    { id: "a3", content: "URGENT · Submit DOC-1234 first draft — due today (Jira)", status: "pending" as const },
-    { id: "a4", content: "IMPORTANT · Update onboarding doc with new screenshots (Slack: #docs-team)", status: "pending" as const },
-    { id: "a5", content: "IMPORTANT · Schedule sprint retro for this week (Slack: #engineering)", status: "pending" as const },
-    { id: "a6", content: "NICE · Read new product spec v2.3 before Wednesday (Email: David)", status: "pending" as const },
-    { id: "a7", content: "NICE · Confirm staging environment access request (Email: IT team)", status: "pending" as const },
+    { id: "a1", content: "URGENT · Approve RITM0164045 — Alon Arad (Sr. Staff Engineer) requests GitHub Enterprise access to tdocs org (Developer role, pending >2 days since Aug 13) (Email: IT Service Desk)", status: "pending" as const },
+    { id: "a2", content: "IMPORTANT · Share latest AI pipeline documentation output link to Lili (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a3", content: "IMPORTANT · Add Lili to the Aon integration team meeting (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a4", content: "IMPORTANT · Notify Kora team of upcoming Flare→Markdown format changes to allow testing (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a5", content: "IMPORTANT · Coordinate with Vita on Kora communication plan (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a6", content: "IMPORTANT · Write updated job descriptions for TW technical content roles (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a7", content: "IMPORTANT · Share Yonyi adoption dashboard links to Lili (Gemini: Yvonne-Lili weekly)", status: "pending" as const },
+    { id: "a8", content: "IMPORTANT · Find EPM release notes coverage for Steve next week — Adam to coordinate (Gemini: Standup Aug 16)", status: "pending" as const },
+    { id: "a9", content: "IMPORTANT · Enter all manager performance reviews in Workday — deadline Sep 15 (Gemini: Adam/Yvonne 1:1 Aug 13)", status: "pending" as const },
+    { id: "a10", content: "IMPORTANT · Follow up with Nicolas Malbranche on Salesforce Case 04181846 — Zero Touch PKI docs waiting on TW (Email: Salesforce)", status: "pending" as const },
+    { id: "a11", content: "IMPORTANT · Meet with Meta to resolve priority source inconsistencies (Gemini: Adam/Yvonne 1:1 Aug 13)", status: "pending" as const },
+    { id: "a12", content: "NICE · Present Claude / Day Manager AI tool at the next guild meeting (Gemini: Standup Aug 12)", status: "pending" as const },
+    { id: "a13", content: "NICE · Arrange Soda demo with Steve for the team (Gemini: Standup Aug 13)", status: "pending" as const },
+    { id: "a14", content: "NICE · Clarify AM MCP server status with Anat; escalate to Director of PM if unresolved (Gemini: Adam/Yvonne 1:1 Aug 13)", status: "pending" as const },
   ],
 
   digest: {
     email: [
-      { from: "Sarah", time: "10:45", text: "PR #567 ready for review — needs approval before merge window closes at 13:00." },
-      { from: "Ofrit", time: "09:30", text: "Requesting Q3 delivery dates by EOD for exec review. Please confirm scope." },
-      { from: "David", time: "yesterday", text: "New product spec v2.3 published to Confluence. Review requested before Wednesday." },
-      { from: "IT Team", time: "08:00", text: "Staging environment access request is pending your email confirmation." },
+      { from: "IT Service Desk", time: "11:43", text: "RITM0164045 pending approval >2 days — Alon Arad (Sr. Staff Engineer) requests GitHub Enterprise access to tdocs org (Developer role) to review TW pages. Needs your response." },
+      { from: "Confluence (CyberArk)", time: "09:00", text: "2 new edits on 'Danielle Biber 1:1 Syncs' page this morning — she likely prepped the agenda ahead of your 14:00 sync." },
+      { from: "Elad Gilat", time: "12:07", text: "PM AI Transformation status (Aug 9–13): 48 of 110 PMs onboarded. Peretz Regev flagged this as low for a top-priority effort and wants all 110 by September." },
+      { from: "Nir Feldman", time: "10:43", text: "FY 2027 CI sign-off Session 2 (Aug 20) canceled — too many PTOs. Rescheduled to Sep 3, 4–5pm with agenda attached." },
+      { from: "Salesforce", time: "09:00", text: "1 case waiting on Technical Writers: Zero Touch PKI (Machine Identity Security / Venafi), Case 04181846, owned by Nicolas Malbranche." },
     ],
     slack: [
-      { channel: "#docs-team", text: "Onboarding doc screenshots are out of date. Action assigned to you." },
-      { channel: "#engineering", text: "Sprint retro slot hasn't been picked yet. Please schedule this week." },
-      { channel: "#product-updates", text: "Product review shifted to 10:30 today (was 11:00). Room B." },
+      { channel: "No Slack data today", text: "Slack ingest did not run — no channel highlights available. Check Slack directly for any messages since Friday." },
     ],
-    // Populated from gemini_notes.txt when available; omit or leave empty otherwise
-    geminiNotes: [] as Array<{ meeting: string; date: string; summary: string }>,
+    geminiNotes: [
+      { meeting: "Yvonne - Lili weekly", date: "Aug 16", summary: "AI pipeline targeting 2x throughput and October Flare→Markdown completion; 8 action items for Yvonne including Kora team notification, TW job descriptions, and Aon integration invite." },
+      { meeting: "Standup WFH", date: "Aug 16", summary: "EPM release coverage needed for Steve next week; Privilege Cloud Centralization rescheduled; Rick to process 14 open tickets pending approval." },
+      { meeting: "Adam / Yvonne 1:1", date: "Aug 13", summary: "Perf reviews due Sep 15 in Workday; AM MCP server needs clarification with Anat; escalate unclear deadline to PM Director." },
+      { meeting: "Yvonne / Shimrit", date: "Aug 13", summary: "Sensitive org change discussion rescheduled to Sunday — strategy to frame as industry-wide shift with financial support offered." },
+      { meeting: "Standup WFH", date: "Aug 13", summary: "Kate to reinstall Cursor/MCP broker; Yvonne to share Day Manager AI tool with org; Danielle to audit stale PRs before Markdown switch." },
+    ],
   },
 
   prep: [
     {
-      event: "Team standup",
-      time: "08:00 – 09:00",
-      attendees: "Full team",
+      event: "Standup WFH",
+      time: "09:00 – 09:30",
+      attendees: "rfox, sgoodman, dbiber, sfinkelstein, avinokoor, slorber, vgilin, okenetguler, kreuveny, ybisk, malawrence, rteller, lamitai, jwexler, bskelker, ylevin",
       context: [
-        "DOC-1234 first draft is due today — may need to flag as at-risk.",
-        "Onboarding screenshots need an owner — good to raise now.",
+        "Completed. Gemini notes: EPM release coverage coordination — Adam to find coverage for Steve's release notes and patches next week due to planned absences.",
+        "Privilege Cloud Centralization project officially rescheduled. Rick has 14 open tickets needing approval reviews before publishing can proceed.",
+        "Yonit to meet Vita about workload and deadlines. Shuli to ping Yonit about agentic onboarding and Kora integration timing.",
+      ],
+      questions: [],
+    },
+    {
+      event: "Yvonne - Lili weekly",
+      time: "12:00 – 12:40",
+      attendees: "Lili Levy (lillevy@paloaltonetworks.com)",
+      context: [
+        "Completed. AI pipeline strategy: proposed pipeline aims to double throughput and cut cycle times by integrating R&D workflows while maintaining human review.",
+        "Flare to Markdown migration progressing toward October completion; tagging excluded from the initial production phase to reduce complexity.",
+        "8 action items assigned to Yvonne — all captured in Actions tab. Lili to review the Application Development Lifecycle definition document.",
+      ],
+      questions: [],
+    },
+    {
+      event: "Danielle : Yvonne Weekly sync",
+      time: "14:00 – 14:25",
+      attendees: "Danielle Biber (dbiber@paloaltonetworks.com)",
+      context: [
+        "Danielle edited the 1:1 Confluence page twice this morning (09:00) — she came prepared with agenda items.",
+        "Today she deleted two Asana projects: 'Docs rebranding' and 'Onboarding TWs template' — worth understanding if this was planned cleanup or migration to Jira.",
+        "From Aug 16 standup: Danielle to meet Shuli and Orna separately; sprint planning to coordinate with Rick. From Aug 13 standup: stale PR audit before Markdown switch; persona placeholders needed for all writers.",
       ],
       questions: [
-        "Who is picking up the onboarding screenshot update?",
-        "Any blockers on sprint goals before retro?",
+        "What is the status on the stale PR audit ahead of the Markdown migration?",
+        "Were the Asana project deletions ('Docs rebranding', 'Onboarding TWs template') intentional — migrating to Jira or just closing out completed work?",
       ],
     },
     {
-      event: "1:1 with manager",
-      time: "13:30 – 14:00",
-      attendees: "Manager",
+      event: "R&D automation plan",
+      time: "14:30 – 15:30",
+      attendees: "Seran (seran@paloaltonetworks.com), Orly Blum (oblum@paloaltonetworks.com), Vita Gilin (vgilin@paloaltonetworks.com)",
       context: [
-        "Ofrit's Q3 delivery date request — align on what to commit vs push.",
-        "PR #567 review is creating workload pressure on your own tasks.",
+        "Context from today's Lili meeting: TW's AI pipeline aims to double throughput and integrate R&D workflows — this likely directly overlaps with what R&D is planning on their side.",
+        "Vita is the TW bridge for this session. She is also scheduled for a Flare→Markdown migration touchpoint (Aug 25) and the Metadata & Publication Lifecycle session (Aug 17 in-office).",
+        "Seran and Orly are R&D-side with no TW Jira tickets. One hour signals a substantive agenda around tooling direction, ownership boundaries, or timeline alignment.",
       ],
       questions: [
-        "Q3 scope: what can we protect vs deprioritize?",
-        "PR review load — is this on my plate long-term?",
+        "What is TW's ownership scope in the automation plan — Vita's SOH workstream only, or broader TW involvement?",
+        "How does the R&D automation plan connect to the Flare→Markdown migration and the AI documentation pipeline discussed with Lili today?",
       ],
     },
   ],

@@ -1,3 +1,6 @@
+# generated daily canvas — template lives in day_manager.canvas.TEMPLATE.tsx
+day_manager.canvas.tsx
+
 # credentials & tokens — never commit these
 credentials.json
 token.json
