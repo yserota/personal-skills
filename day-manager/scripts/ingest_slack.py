@@ -11,6 +11,9 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import truststore
+truststore.inject_into_ssl()
+
 from dotenv import load_dotenv
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -204,7 +207,7 @@ def main():
 
     output = "\n".join(header + body_lines)
     out_file.write_text(output, encoding="utf-8")
-    print(f"Wrote {total} messages across {len(display_names)} channel(s) → {out_file}")
+    print(f"Wrote {total} messages across {len(display_names)} channel(s) -> {out_file}")
 
 
 if __name__ == "__main__":

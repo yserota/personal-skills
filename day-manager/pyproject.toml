@@ -14,6 +14,7 @@ dependencies = [
   "google-auth-oauthlib>=1.2.0",
   "slack-sdk>=3.31.0",
   "python-dotenv>=1.0.0",
+  "truststore>=0.9.1",
 ]
 
 [tool.setuptools.packages.find]
