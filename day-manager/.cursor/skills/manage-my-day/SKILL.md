@@ -188,15 +188,43 @@ For each calendar event with attendees, produce a short prep note:
   standup), pull the most relevant outcomes or open items from it.
 - 1–2 suggested agenda items or questions to raise
 If no relevant context is found for an event, say so briefly.
+
+## DRAFTS
+Generate email drafts for the following two categories, prioritised by urgency. Produce at most 5 drafts total.
+
+**Category 1 — Replies to incoming emails** that clearly require a substantive response.
+Skip: auto-generated notifications, calendar invites/updates, spam quarantine summaries,
+Jira/Confluence activity emails, GitHub Actions alerts, and any thread where no reply is
+needed. Focus on emails where a human sender is waiting for a response from Yvonne.
+
+**Category 2 — Outgoing emails for action items** from the ACTIONS section that involve
+directly contacting someone — e.g. follow-ups, team notifications, meeting invitations,
+sharing links or documents.
+
+For each draft output exactly this format (blank line between drafts):
+
+---
+TO: {recipient name and email, or just name if email is obvious}
+SUBJECT: {Re: original subject line, or a new subject for outgoing emails}
+TYPE: {reply | followup | notification}
+TRIGGER: {one sentence: what action item or email prompted this draft}
+BODY:
+{full email body — professional, concise, first-person as Yvonne; 3–8 sentences}
+---
 ```
 
 ### Step 4 — Parse Claude's output
 
-Extract the four sections from Claude's response:
+Extract the five sections from Claude's response:
 - Everything under `## DIGEST` → `digestContent`
 - Everything under `## ACTIONS` → `actionsContent`
 - Everything under `## SCHEDULE` → `scheduleContent`
 - Everything under `## PREP` → `prepContent`
+- Everything under `## DRAFTS` → `draftsContent`
+
+Parse `draftsContent` by splitting on the `---` delimiter. For each block extract the
+`TO:`, `SUBJECT:`, `TYPE:`, `TRIGGER:`, and `BODY:` fields. Strip leading/trailing
+whitespace from each value. Assign sequential ids `d1`, `d2`, etc.
 
 ### Step 5 — Write the canvas
 
@@ -257,6 +285,21 @@ const CONTENT = {
       attendees: "attendee list",
       context: ["bullet 1", "bullet 2"],
       questions: ["question 1", "question 2"],
+    },
+  ],
+
+  // Generated from ## DRAFTS — max 5 items, sorted by urgency.
+  // type: "reply" = replying to an incoming email
+  //       "followup" = proactive outreach for an action item
+  //       "notification" = informing a team or person of something
+  drafts: [
+    {
+      id: "d1",
+      to: "Recipient Name <email@example.com>",
+      subject: "Re: Original subject line",
+      type: "reply" as "reply" | "followup" | "notification",
+      trigger: "One-sentence reason this draft was generated",
+      body: "Full email body text...",
     },
   ],
 };
