@@ -125,8 +125,16 @@ const CONTENT = {
       ],
     },
   ],
-};
 
+  drafts: [] as Array<{
+    id: string;
+    to: string;
+    subject: string;
+    type: "reply" | "followup" | "notification";
+    trigger: string;
+    body: string;
+  }>,
+};
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function timeToMinutes(t: string): number {
@@ -154,7 +162,7 @@ const nowInsertIndex = (() => {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type Tab = "schedule" | "actions" | "digest" | "prep";
+type Tab = "schedule" | "actions" | "digest" | "prep" | "drafts";
 type ScheduleItem = typeof CONTENT.schedule[0];
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -474,6 +482,57 @@ function PrepPanel() {
   );
 }
 
+function DraftsPanel() {
+  const BADGE_COLORS: Record<string, string> = {
+    reply: "#2563eb",
+    followup: "#7c3aed",
+    notification: "#0891b2",
+  };
+  return (
+    <Stack gap={16}>
+      <H2>Draft Emails</H2>
+      {CONTENT.drafts.length === 0 && (
+        <Text tone="tertiary">No drafts generated for today.</Text>
+      )}
+      {CONTENT.drafts.map((draft) => (
+        <Card key={draft.id}>
+          <CardHeader>
+            <Stack gap={4}>
+              <Row gap={8} align="center">
+                <span style={{
+                  background: BADGE_COLORS[draft.type] ?? "#6b7280",
+                  color: "#fff",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.07em",
+                  textTransform: "uppercase",
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                }}>
+                  {draft.type}
+                </span>
+                <Text size="small" weight="semibold">{draft.subject}</Text>
+              </Row>
+              <Text size="small" tone="secondary">To: {draft.to}</Text>
+              <Text size="small" tone="tertiary" style={{ fontStyle: "italic" }}>
+                {draft.trigger}
+              </Text>
+            </Stack>
+          </CardHeader>
+          <CardBody>
+            <CollapsibleSection title="Body">
+              <Text size="small" tone="secondary"
+                style={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}>
+                {draft.body}
+              </Text>
+            </CollapsibleSection>
+          </CardBody>
+        </Card>
+      ))}
+    </Stack>
+  );
+}
+
 // ── Root ──────────────────────────────────────────────────────────────────────
 
 export default function DayManager() {
@@ -489,6 +548,7 @@ export default function DayManager() {
     { id: "actions", label: `Actions (${CONTENT.actions.length})` },
     { id: "digest", label: "Digest" },
     { id: "prep", label: `Prep (${CONTENT.prep.length})` },
+    { id: "drafts", label: `Drafts (${CONTENT.drafts.length})` },
   ];
 
   return (
@@ -553,6 +613,7 @@ export default function DayManager() {
       {activeTab === "actions" && <ActionsPanel />}
       {activeTab === "digest" && <DigestPanel />}
       {activeTab === "prep" && <PrepPanel />}
+      {activeTab === "drafts" && <DraftsPanel />}
 
       {/* ── Footer ────────────────────────────────────────────────────────── */}
       <Divider />
