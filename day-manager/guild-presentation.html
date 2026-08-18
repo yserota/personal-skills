@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day Manager — Guild Presentation</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d2a8ff;
+    --accent4: #ffa657;
+    --accent5: #ff7b72;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --urgent: #ff7b72;
+    --important: #ffa657;
+    --nice: #3fb950;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ── SLIDE CONTAINER ─────────────────────────────────────────────────────── */
+  .deck {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.out {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ── SLIDE NUMBERING / NAV ───────────────────────────────────────────────── */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-dot.active { background: var(--accent); transform: scale(1.4); }
+
+  .nav-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.15s;
+  }
+  .nav-btn:hover { background: var(--border); }
+
+  .slide-counter {
+    position: fixed;
+    top: 20px;
+    right: 28px;
+    font-size: 12px;
+    color: var(--muted);
+    z-index: 100;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── TYPOGRAPHY ──────────────────────────────────────────────────────────── */
+  .slide-title {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .slide-subtitle {
+    font-size: 20px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 36px;
+    line-height: 1.4;
+  }
+
+  h2 { font-size: 30px; font-weight: 700; margin-bottom: 8px; }
+  h3 { font-size: 18px; font-weight: 600; color: var(--accent); margin-bottom: 10px; }
+
+  .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  /* ── ACCENT GRADIENT TITLES ──────────────────────────────────────────────── */
+  .grad-blue  { background: linear-gradient(90deg, #58a6ff, #79c0ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .grad-green { background: linear-gradient(90deg, #3fb950, #56d364); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .grad-purple{ background: linear-gradient(90deg, #d2a8ff, #bc8cff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .grad-orange{ background: linear-gradient(90deg, #ffa657, #ffb77a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .grad-red   { background: linear-gradient(90deg, #ff7b72, #ffa198); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .grad-main  { background: linear-gradient(90deg, #58a6ff 0%, #d2a8ff 50%, #3fb950 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  /* ── CARDS & GRIDS ───────────────────────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 900px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; width: 100%; max-width: 1000px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; width: 100%; max-width: 1100px; }
+
+  /* ── PILL / BADGE ────────────────────────────────────────────────────────── */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+  .pill-blue   { background: rgba(88,166,255,0.15);  color: #79c0ff; border: 1px solid rgba(88,166,255,0.3); }
+  .pill-green  { background: rgba(63,185,80,0.15);   color: #56d364; border: 1px solid rgba(63,185,80,0.3); }
+  .pill-purple { background: rgba(210,168,255,0.15); color: #d2a8ff; border: 1px solid rgba(210,168,255,0.3); }
+  .pill-orange { background: rgba(255,166,87,0.15);  color: #ffa657; border: 1px solid rgba(255,166,87,0.3); }
+  .pill-red    { background: rgba(255,123,114,0.15); color: #ff7b72; border: 1px solid rgba(255,123,114,0.3); }
+
+  /* ── BULLET LIST ─────────────────────────────────────────────────────────── */
+  ul.bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  ul.bullets li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 16px;
+    line-height: 1.45;
+    color: var(--text);
+  }
+  ul.bullets li::before {
+    content: "▸";
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── CODE ────────────────────────────────────────────────────────────────── */
+  code {
+    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+    font-size: 13px;
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #e6edf3;
+  }
+
+  pre {
+    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+    font-size: 13px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow: auto;
+    line-height: 1.6;
+    color: #e6edf3;
+    white-space: pre-wrap;
+  }
+
+  /* ── DIVIDER ─────────────────────────────────────────────────────────────── */
+  .divider { width: 60px; height: 3px; border-radius: 2px; background: var(--accent); margin: 16px auto; }
+
+  /* ── FLOW DIAGRAM ────────────────────────────────────────────────────────── */
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; }
+  .flow-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    min-width: 100px;
+  }
+  .flow-arrow {
+    font-size: 18px;
+    color: var(--muted);
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+
+  /* ── SOURCE BADGES ───────────────────────────────────────────────────────── */
+  .source-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+
+  /* ── PANEL CARD ──────────────────────────────────────────────────────────── */
+  .panel-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .panel-card .panel-icon { font-size: 28px; }
+  .panel-card h3 { font-size: 17px; color: var(--text); margin-bottom: 4px; }
+  .panel-card p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+  /* ── VALUE METRIC ────────────────────────────────────────────────────────── */
+  .metric-box {
+    text-align: center;
+    padding: 28px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .metric-num {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .metric-label { font-size: 14px; color: var(--muted); line-height: 1.4; }
+
+  /* ── TIMELINE ────────────────────────────────────────────────────────────── */
+  .timeline { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+  .tl-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13.5px;
+  }
+  .tl-time { color: var(--muted); width: 130px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .tl-bar {
+    height: 28px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 12.5px;
+    font-weight: 500;
+    flex: 1;
+  }
+  .tl-meeting  { background: rgba(88,166,255,0.2);  color: #79c0ff; border-left: 3px solid #58a6ff; }
+  .tl-work     { background: rgba(63,185,80,0.15);  color: #56d364; border-left: 3px solid #3fb950; }
+  .tl-auto     { background: rgba(210,168,255,0.15);color: #d2a8ff; border-left: 3px solid #d2a8ff; }
+
+  /* ── ACTION ITEMS ────────────────────────────────────────────────────────── */
+  .action-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+  .action-urgent    { background: rgba(255,123,114,0.1);  border-left: 3px solid #ff7b72; }
+  .action-important { background: rgba(255,166,87,0.1);   border-left: 3px solid #ffa657; }
+  .action-nice      { background: rgba(63,185,80,0.1);    border-left: 3px solid #3fb950; }
+  .action-tag { font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .tag-urgent    { color: #ff7b72; }
+  .tag-important { color: #ffa657; }
+  .tag-nice      { color: #3fb950; }
+
+  /* ── WIDE LAYOUT ─────────────────────────────────────────────────────────── */
+  .wide { width: 100%; max-width: 1000px; }
+  .full { width: 100%; max-width: 1150px; }
+
+  /* ── TITLE SLIDE ─────────────────────────────────────────────────────────── */
+  #slide-0 {
+    background: radial-gradient(ellipse at 30% 50%, rgba(88,166,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(210,168,255,0.07) 0%, transparent 60%),
+                var(--bg);
+  }
+
+  .big-title {
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    text-align: center;
+  }
+
+  .by-line {
+    font-size: 16px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 24px;
+  }
+
+  .tag-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  /* ── ARCHITECTURE ────────────────────────────────────────────────────────── */
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    width: 100%;
+    max-width: 950px;
+    align-items: start;
+  }
+
+  .arch-phase {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .arch-phase-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .arch-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    color: var(--muted);
+    font-size: 24px;
+    padding-top: 40px;
+  }
+
+  .arch-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .arch-box.highlight { border-color: var(--accent); }
+  .arch-box.highlight2 { border-color: var(--accent3); }
+
+  .arch-arrow {
+    display: flex;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 16px;
+    padding: 2px 0;
+  }
+
+  /* ── MCP BADGE GRID ──────────────────────────────────────────────────────── */
+  .mcp-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  .mcp-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 150px;
+  }
+  .mcp-icon { font-size: 26px; margin-bottom: 6px; }
+  .mcp-label { font-size: 13px; font-weight: 600; }
+  .mcp-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ── QUOTE ───────────────────────────────────────────────────────────────── */
+  .quote-card {
+    background: var(--surface);
+    border-left: 4px solid var(--accent3);
+    border-radius: 0 10px 10px 0;
+    padding: 20px 28px;
+    font-size: 18px;
+    line-height: 1.6;
+    font-style: italic;
+    color: #c9d1d9;
+    max-width: 780px;
+  }
+  .quote-attr {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: normal;
+  }
+
+  /* ── SCROLL INSIDE SLIDE ─────────────────────────────────────────────────── */
+  .scrollable { overflow-y: auto; max-height: 60vh; }
+  .scrollable::-webkit-scrollbar { width: 4px; }
+  .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ── RESPONSIVE FONT FOR SMALLER SCREENS ─────────────────────────────────── */
+  @media (max-height: 700px) {
+    .big-title { font-size: 48px; }
+    .slide { padding: 30px 60px; }
+    .slide-title { font-size: 32px; }
+    h2 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ── SLIDE 0: TITLE ──────────────────────────────────────────────────── -->
+  <div class="slide active" id="slide-0">
+    <div class="label">Guild Presentation · August 2026</div>
+    <h1 class="big-title">
+      <span class="grad-main">Day Manager</span>
+    </h1>
+    <p class="slide-subtitle" style="max-width: 600px; font-size: 22px; margin-top: 12px;">
+      An AI-powered morning briefing that turns four noisy channels into one focused daily plan — fully automated, inside Cursor.
+    </p>
+    <div class="divider"></div>
+    <div class="tag-row">
+      <span class="pill pill-blue">📧 Gmail</span>
+      <span class="pill pill-blue">📅 Google Calendar</span>
+      <span class="pill pill-blue">💬 Slack</span>
+      <span class="pill pill-blue">🎙️ Google Meet / Gemini</span>
+      <span class="pill pill-purple">🔗 Jira</span>
+      <span class="pill pill-purple">📄 Confluence</span>
+      <span class="pill pill-green">⚡ Cursor Agent Skill</span>
+    </div>
+    <p class="by-line">Yvonne Serota · Technical Writing Guild</p>
+  </div>
+
+  <!-- ── SLIDE 1: THE PROBLEM ─────────────────────────────────────────────── -->
+  <div class="slide" id="slide-1">
+    <div class="label">The Problem</div>
+    <h1 class="slide-title">Every morning is a <span class="grad-red">context-switching marathon</span></h1>
+    <div class="divider"></div>
+    <div class="grid-2" style="max-width: 820px; margin-top: 8px;">
+      <div class="card">
+        <h3 style="color: var(--muted);">Before Day Manager</h3>
+        <ul class="bullets" style="margin-top: 8px;">
+          <li>Open Gmail — scan 20–50 emails, figure out what needs action</li>
+          <li>Open Calendar — parse who's in each meeting, what prep is needed</li>
+          <li>Open Slack — skim multiple channels for missed decisions</li>
+          <li>Open Jira — check team ticket status before standup</li>
+          <li>Try to build a mental picture of priorities</li>
+          <li>Still miss something important</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>After Day Manager</h3>
+        <ul class="bullets" style="margin-top: 8px;">
+          <li>Data is already ingested by 08:05</li>
+          <li>Type <code>/manage-my-day</code> in Cursor chat</li>
+          <li>Canvas opens with 4 panels — all context synthesised</li>
+          <li>Urgent actions are surfaced and prioritised</li>
+          <li>Meetings come with live Jira + Confluence context</li>
+          <li>Day starts focused, not frantic</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: WHAT IS IT ──────────────────────────────────────────────── -->
+  <div class="slide" id="slide-2">
+    <div class="label">What is it?</div>
+    <h1 class="slide-title">A <span class="grad-green">Cursor Skill</span> + automated pipeline</h1>
+    <div class="divider"></div>
+    <div style="display: flex; gap: 18px; align-items: flex-start; max-width: 950px; width: 100%; margin-top: 10px;">
+      <div style="flex: 1;">
+        <div class="card" style="height: 100%;">
+          <h3>The Skill (<code>/manage-my-day</code>)</h3>
+          <p style="font-size: 14px; color: var(--muted); line-height: 1.6; margin-top: 8px;">
+            A Cursor Agent Skill that reads your pre-ingested data files,
+            enriches them live with Jira and Confluence via MCP, sends
+            everything to Claude with a structured prompt, then renders
+            a four-panel React canvas inside the IDE.
+          </p>
+          <div style="margin-top: 14px;">
+            <div class="action-item action-urgent" style="margin-bottom: 6px;">
+              <span class="action-tag tag-urgent">TRIGGER</span>
+              <span>User says "manage my day", "plan my day", "daily briefing"…</span>
+            </div>
+            <div class="action-item action-nice">
+              <span class="action-tag tag-nice">OUTPUT</span>
+              <span>Live canvas opens beside the chat — updated each run</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="flex: 1;">
+        <div class="card" style="height: 100%;">
+          <h3>The Pipeline (automated)</h3>
+          <p style="font-size: 14px; color: var(--muted); line-height: 1.6; margin-top: 8px;">
+            Four Python scripts + one Google Apps Script collect raw data
+            each morning. Windows Task Scheduler runs the orchestrator
+            at 08:05. By the time you open Cursor, everything is ready.
+          </p>
+          <div style="margin-top: 14px;" class="timeline">
+            <div class="tl-row">
+              <span class="tl-time">08:00 — Apps Script</span>
+              <div class="tl-bar tl-auto">Gmail · Calendar · Gemini Notes → Drive</div>
+            </div>
+            <div class="tl-row">
+              <span class="tl-time">08:05 — Scheduler</span>
+              <div class="tl-bar tl-auto">Drive sync check + Slack ingest</div>
+            </div>
+            <div class="tl-row">
+              <span class="tl-time">~08:10 — Cursor</span>
+              <div class="tl-bar tl-meeting">/manage-my-day → canvas ready</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: ARCHITECTURE ────────────────────────────────────────────── -->
+  <div class="slide" id="slide-3">
+    <div class="label">How it works — Architecture</div>
+    <h1 class="slide-title">Two phases: <span class="grad-purple">Ingest</span> then <span class="grad-blue">Analyse</span></h1>
+    <div class="divider"></div>
+
+    <div class="arch">
+      <!-- Phase 1 -->
+      <div class="arch-phase">
+        <div class="arch-phase-title" style="color: #d2a8ff;">Phase 1 — Ingestion (automated, 08:00)</div>
+        <div class="arch-box" style="border-color: #d2a8ff;">
+          ☁️ Google Workspace<br>
+          <small style="color: var(--muted);">Apps Script (day_manager.gs)</small>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div style="display: flex; gap: 6px;">
+          <div class="arch-box" style="flex:1; font-size:12px;">📧 gmail.txt</div>
+          <div class="arch-box" style="flex:1; font-size:12px;">📅 calendar.txt</div>
+          <div class="arch-box" style="flex:1; font-size:12px;">🎙️ gemini_notes.txt</div>
+        </div>
+        <div class="arch-arrow">↓ <small style="color: var(--muted);">Google Drive for Desktop syncs</small></div>
+        <div class="arch-box" style="border-color: #d2a8ff;">
+          🖥️ Windows Task Scheduler<br>
+          <small style="color: var(--muted);">08:05 → ingest_all.py</small>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-box">
+          💬 Slack API → slack.txt
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-box" style="font-size:12px; border-color: var(--border);">
+          📁 <code>DATA_DIR/YYYY-MM-DD/</code><br>4 plain-text files · ready
+        </div>
+      </div>
+
+      <!-- Arrow between phases -->
+      <div class="arch-divider">
+        <div style="writing-mode: vertical-rl; font-size: 11px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">on demand</div>
+        ⟶
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="arch-phase">
+        <div class="arch-phase-title" style="color: #58a6ff;">Phase 2 — Analysis (on-demand, ~08:10)</div>
+        <div class="arch-box" style="border-color: #58a6ff;">
+          🧠 Cursor Agent<br>
+          <small style="color: var(--muted);">skill: manage-my-day</small>
+        </div>
+        <div class="arch-arrow">↓ reads files + queries MCP (parallel)</div>
+        <div style="display: flex; gap: 6px;">
+          <div class="arch-box" style="flex:1; font-size:12px; border-color: #d2a8ff;">🔗 Jira<br><small>team tickets<br>per-attendee</small></div>
+          <div class="arch-box" style="flex:1; font-size:12px; border-color: #d2a8ff;">📄 Confluence<br><small>per-meeting<br>context pages</small></div>
+        </div>
+        <div class="arch-arrow">↓ structured XML prompt</div>
+        <div class="arch-box" style="border-color: #58a6ff;">
+          ✨ Claude<br>
+          <small style="color: var(--muted);">analyzes all inputs → 4 sections</small>
+        </div>
+        <div class="arch-arrow">↓ parses output → writes canvas</div>
+        <div class="arch-box" style="border-color: #3fb950;">
+          📊 day-manager.canvas.tsx<br>
+          <small style="color: var(--muted);">opens live in Cursor IDE</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: DATA SOURCES ─────────────────────────────────────────────── -->
+  <div class="slide" id="slide-4">
+    <div class="label">Data Sources</div>
+    <h1 class="slide-title">Four ingestion channels, <span class="grad-orange">zero manual steps</span></h1>
+    <div class="divider"></div>
+    <div class="grid-2" style="max-width: 900px; margin-top: 10px;">
+
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 10px;">
+          <span style="font-size:24px;">📧</span>
+          <div>
+            <h3 style="color:var(--text); margin:0;">Gmail</h3>
+            <div class="pill pill-purple" style="margin-top:4px;">Apps Script + Drive sync</div>
+          </div>
+        </div>
+        <ul class="bullets" style="font-size:14px;">
+          <li>Last 24h of email threads (up to 50)</li>
+          <li>800-char preview per thread</li>
+          <li>Non-promotional only</li>
+          <li>Written to <code>gmail.txt</code></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 10px;">
+          <span style="font-size:24px;">📅</span>
+          <div>
+            <h3 style="color:var(--text); margin:0;">Google Calendar</h3>
+            <div class="pill pill-purple" style="margin-top:4px;">Apps Script + Drive sync</div>
+          </div>
+        </div>
+        <ul class="bullets" style="font-size:14px;">
+          <li>Today + tomorrow's events</li>
+          <li>Full attendee lists</li>
+          <li>Used for schedule & prep panels</li>
+          <li>Written to <code>calendar.txt</code></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 10px;">
+          <span style="font-size:24px;">💬</span>
+          <div>
+            <h3 style="color:var(--text); margin:0;">Slack</h3>
+            <div class="pill pill-blue" style="margin-top:4px;">Python · Slack Bot Token</div>
+          </div>
+        </div>
+        <ul class="bullets" style="font-size:14px;">
+          <li>Last 24h per configured channel</li>
+          <li>Up to 100 messages per channel</li>
+          <li>Auto-retry on rate limits</li>
+          <li>Written to <code>slack.txt</code></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 10px;">
+          <span style="font-size:24px;">🎙️</span>
+          <div>
+            <h3 style="color:var(--text); margin:0;">Gemini Meet Notes</h3>
+            <div class="pill pill-purple" style="margin-top:4px;">Gmail label "Gemini" via Apps Script</div>
+          </div>
+        </div>
+        <ul class="bullets" style="font-size:14px;">
+          <li>Google Meet AI summaries, last 3 work days</li>
+          <li>3,000-char previews (larger than email)</li>
+          <li>Past meeting action items carry forward</li>
+          <li>Written to <code>gemini_notes.txt</code></li>
+        </ul>
+      </div>
+
+    </div>
+    <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center;">
+      <span class="pill pill-purple">🔗 Jira — live at analysis time</span>
+      <span class="pill pill-purple">📄 Confluence — live at analysis time</span>
+      <span style="font-size:13px; color: var(--muted);">queried in parallel before sending to Claude</span>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: THE FOUR PANELS ──────────────────────────────────────────── -->
+  <div class="slide" id="slide-5">
+    <div class="label">The Output — Four-Panel Canvas</div>
+    <h1 class="slide-title">One dashboard, <span class="grad-green">four lenses</span></h1>
+    <div class="divider"></div>
+    <div class="grid-4" style="margin-top: 10px;">
+
+      <div class="panel-card">
+        <div class="panel-icon">🗓️</div>
+        <h3>Schedule</h3>
+        <p>Timeline view of all calendar events + work blocks filling the gaps. A "NOW" marker tracks real time. Past items dim automatically.</p>
+        <div class="pill pill-blue" style="margin-top: 6px; align-self: flex-start;">Time-aware</div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-icon">✅</div>
+        <h3>Actions</h3>
+        <p>Every concrete task extracted from email, Slack, calendar, and Gemini notes — sorted by urgency: URGENT · IMPORTANT · NICE.</p>
+        <div class="pill pill-red" style="margin-top: 6px; align-self: flex-start;">Prioritised</div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-icon">📰</div>
+        <h3>Digest</h3>
+        <p>Top 5 bullets each from email and Slack. Plus a Gemini Notes section: one-line summary per recent meeting outcome.</p>
+        <div class="pill pill-orange" style="margin-top: 6px; align-self: flex-start;">Synthesised</div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-icon">🎯</div>
+        <h3>Prep</h3>
+        <p>Per-meeting cards with attendees, live Jira tickets for each attendee, relevant Confluence pages, and suggested agenda questions.</p>
+        <div class="pill pill-purple" style="margin-top: 6px; align-self: flex-start;">Jira-enriched</div>
+      </div>
+
+    </div>
+    <div class="card" style="max-width: 900px; margin-top: 18px; padding: 14px 20px;">
+      <p style="font-size: 13px; color: var(--muted); text-align: center;">
+        The canvas is a live React app (<code>.canvas.tsx</code>) rendered inside the Cursor IDE — updated fresh on each <code>/manage-my-day</code> run.
+        The template is version-controlled; the generated output never touches the repo.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6: LIVE JIRA ENRICHMENT ─────────────────────────────────────── -->
+  <div class="slide" id="slide-6">
+    <div class="label">Live Enrichment via MCP</div>
+    <h1 class="slide-title">Meetings arrive with <span class="grad-purple">live context</span></h1>
+    <div class="divider"></div>
+
+    <div style="display: flex; gap: 18px; align-items: flex-start; max-width: 960px; width: 100%; margin-top: 10px;">
+      <div style="flex: 1;">
+        <div class="card">
+          <h3>What the skill queries — automatically</h3>
+          <ul class="bullets" style="margin-top: 10px; font-size: 14px; gap: 12px;">
+            <li>
+              <div>
+                <strong>Team snapshot</strong> — all in-progress + under-review DOC Jira tickets (standup-ready)
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>Per-attendee tickets</strong> — open DOC tickets for each @cyberark.com attendee on the calendar (inferred from email prefix)
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>Confluence pages</strong> — 1–3 most relevant pages per substantive meeting topic
+              </div>
+            </li>
+          </ul>
+          <div style="margin-top: 14px; background: var(--surface2); border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">All queries run in parallel</div>
+            <pre style="font-size: 12px; background: none; border: none; padding: 0;">jira_search: project = DOC AND status in ("In Progress", "Under Review")
+jira_search: assignee = "rfox" AND statusCategory != Done
+confluence_search(query="Standup WFH agenda", limit=3)</pre>
+          </div>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+        <div class="card">
+          <h3 style="color: #56d364;">Prep card example output</h3>
+          <div style="font-size: 13.5px; line-height: 1.6; margin-top: 8px; color: #c9d1d9;">
+            <strong>Standup WFH · 09:00 – 09:30</strong><br>
+            <span style="color: var(--muted);">Attendees: rfox, sgoodman, dbiber, sfinkelstein…</span>
+            <ul style="list-style: disc; padding-left: 18px; margin-top: 8px; color: var(--muted);">
+              <li>DOC-24201: EPM release notes — rfox (In Progress, High)</li>
+              <li>DOC-24156: Zero Touch PKI docs — dbiber (Under Review)</li>
+              <li>DOC-24099: Privilege Cloud rescheduled → next sprint</li>
+            </ul>
+            <div style="margin-top: 10px; color: var(--accent); font-size: 12px;">❓ Agenda suggestion: Who's covering EPM next week for Steve?</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="color: #d2a8ff;">Why it matters</h3>
+          <p style="font-size: 14px; color: var(--muted); line-height: 1.5;">
+            Claude sees your teammates' actual open Jira tickets and relevant Confluence docs <em>before</em> generating prep notes — so the output is grounded in real project state, not guesswork.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7: THE DAILY WORKFLOW ───────────────────────────────────────── -->
+  <div class="slide" id="slide-7">
+    <div class="label">Daily Workflow</div>
+    <h1 class="slide-title">From inbox chaos to <span class="grad-green">focused plan</span> in minutes</h1>
+    <div class="divider"></div>
+
+    <div style="max-width: 860px; width: 100%; margin-top: 14px;">
+      <div class="timeline">
+        <div class="tl-row">
+          <span class="tl-time">08:00 — automatic</span>
+          <div class="tl-bar tl-auto">☁️ Apps Script fires in Google Workspace — writes gmail.txt, calendar.txt, gemini_notes.txt to Drive</div>
+        </div>
+        <div class="tl-row">
+          <span class="tl-time">08:05 — automatic</span>
+          <div class="tl-bar tl-auto">🖥️ Windows Task Scheduler verifies Drive sync, runs ingest_all.py → adds slack.txt</div>
+        </div>
+        <div class="tl-row">
+          <span class="tl-time">~08:10 — you</span>
+          <div class="tl-bar tl-meeting">Open Cursor → new chat → type <code style="background: rgba(255,255,255,0.1); border-radius: 3px; padding: 1px 5px;">/manage-my-day</code></div>
+        </div>
+        <div class="tl-row">
+          <span class="tl-time">automatic</span>
+          <div class="tl-bar tl-auto">🔍 Agent reads 4 data files, queries Jira + Confluence in parallel via MCP broker</div>
+        </div>
+        <div class="tl-row">
+          <span class="tl-time">automatic</span>
+          <div class="tl-bar tl-auto">✨ Claude analyses everything, returns 4 structured sections (DIGEST · ACTIONS · SCHEDULE · PREP)</div>
+        </div>
+        <div class="tl-row">
+          <span class="tl-time">~08:12 — you</span>
+          <div class="tl-bar tl-meeting">📊 Canvas opens beside chat — interactive daily briefing dashboard ready to use</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="max-width: 860px; margin-top: 18px; padding: 14px 24px; display: flex; gap: 32px; justify-content: center;">
+      <div style="text-align:center;">
+        <div style="font-size: 28px; font-weight: 800; color: var(--accent);">4</div>
+        <div style="font-size: 12px; color: var(--muted);">data sources ingested</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size: 28px; font-weight: 800; color: var(--accent3);">0</div>
+        <div style="font-size: 12px; color: var(--muted);">manual steps each morning</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size: 28px; font-weight: 800; color: var(--accent4);">&lt;5 min</div>
+        <div style="font-size: 12px; color: var(--muted);">inbox → focused plan</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size: 28px; font-weight: 800; color: var(--accent3);">Live</div>
+        <div style="font-size: 12px; color: var(--muted);">Jira + Confluence context</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8: CANVAS SAMPLE ────────────────────────────────────────────── -->
+  <div class="slide" id="slide-8">
+    <div class="label">The Canvas — Sample Actions &amp; Schedule</div>
+    <h1 class="slide-title">From Sunday August 16 — <span class="grad-orange">real output</span></h1>
+    <div class="divider"></div>
+
+    <div class="grid-2" style="max-width: 980px; margin-top: 8px;">
+      <!-- Actions sample -->
+      <div class="card">
+        <h3>Actions (14 extracted)</h3>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-top:10px;">
+          <div class="action-item action-urgent">
+            <span class="action-tag tag-urgent">URGENT</span>
+            <span style="font-size:13px;">Approve RITM0164045 — Alon Arad GitHub Enterprise access (pending &gt;2 days)</span>
+          </div>
+          <div class="action-item action-important">
+            <span class="action-tag tag-important">IMPORT</span>
+            <span style="font-size:13px;">Share AI pipeline docs link to Lili (from Gemini: Yvonne-Lili weekly)</span>
+          </div>
+          <div class="action-item action-important">
+            <span class="action-tag tag-important">IMPORT</span>
+            <span style="font-size:13px;">Notify Kora team of Flare→Markdown format changes</span>
+          </div>
+          <div class="action-item action-important">
+            <span class="action-tag tag-important">IMPORT</span>
+            <span style="font-size:13px;">Enter manager perf reviews in Workday — deadline Sep 15</span>
+          </div>
+          <div class="action-item action-nice">
+            <span class="action-tag tag-nice">NICE</span>
+            <span style="font-size:13px;">Present Claude / Day Manager AI tool at the next guild meeting</span>
+          </div>
+        </div>
+      </div>
+      <!-- Schedule sample -->
+      <div class="card">
+        <h3>Schedule</h3>
+        <div class="timeline" style="margin-top:10px;">
+          <div class="tl-row">
+            <span class="tl-time" style="font-size:12px;">09:00 – 09:30</span>
+            <div class="tl-bar tl-meeting" style="font-size:12px;">📅 Standup WFH</div>
+          </div>
+          <div class="tl-row">
+            <span class="tl-time" style="font-size:12px;">09:30 – 11:30</span>
+            <div class="tl-bar tl-work" style="font-size:12px;">Focus time — GitHub approval, DOC tickets</div>
+          </div>
+          <div class="tl-row">
+            <span class="tl-time" style="font-size:12px;">12:00 – 12:40</span>
+            <div class="tl-bar tl-meeting" style="font-size:12px;">📅 Yvonne - Lili weekly</div>
+          </div>
+          <div class="tl-row">
+            <span class="tl-time" style="font-size:12px;">14:00 – 14:25</span>
+            <div class="tl-bar tl-meeting" style="font-size:12px;">📅 Danielle : Yvonne Weekly sync</div>
+          </div>
+          <div class="tl-row">
+            <span class="tl-time" style="font-size:12px;">14:30 – 15:30</span>
+            <div class="tl-bar tl-meeting" style="font-size:12px;">📅 R&amp;D automation plan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="max-width: 980px; margin-top: 14px; padding: 12px 20px;">
+      <p style="font-size: 13px; color: var(--muted); text-align: center;">
+        📍 Note: action item <strong>#12</strong> from the Aug 16 standup: <em>"Present Claude / Day Manager AI tool at the next guild meeting"</em> — which is exactly what you're watching right now!
+      </p>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 9: TECH HIGHLIGHTS ──────────────────────────────────────────── -->
+  <div class="slide" id="slide-9">
+    <div class="label">Under the Hood</div>
+    <h1 class="slide-title">Key <span class="grad-blue">technical decisions</span></h1>
+    <div class="divider"></div>
+
+    <div class="grid-2" style="max-width: 920px; margin-top: 10px;">
+
+      <div class="card">
+        <h3>Apps Script + Drive sync (no GCP needed)</h3>
+        <p style="font-size: 14px; color: var(--muted); line-height: 1.5; margin-top: 6px;">
+          Gmail and Calendar are exported by a Google Apps Script that runs <em>inside Google Workspace</em> — no GCP project, no OAuth app to manage. Files land in Drive, which syncs locally via Google Drive for Desktop.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>MCP Policy Broker for Jira + Confluence</h3>
+        <p style="font-size: 14px; color: var(--muted); line-height: 1.5; margin-top: 6px;">
+          The skill uses <code>jira_search</code> and <code>confluence_search</code> through the existing MCP Policy Broker — the same tools already available in Cursor. Zero extra auth setup required.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Structured XML prompt engineering</h3>
+        <p style="font-size: 14px; color: var(--muted); line-height: 1.5; margin-top: 6px;">
+          All inputs are wrapped in named XML tags (<code>&lt;calendar&gt;</code>, <code>&lt;gmail&gt;</code>, <code>&lt;jira&gt;</code>…) before sending to Claude. This makes Claude's extraction reliable and parseable into canvas sections.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Graceful degradation everywhere</h3>
+        <p style="font-size: 14px; color: var(--muted); line-height: 1.5; margin-top: 6px;">
+          Missing files, failed Jira queries, Slack rate limits — every failure mode is handled silently. The pipeline never breaks because one source is unavailable. <code>gemini_notes.txt</code> is always optional.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Canvas stays outside the repo</h3>
+        <p style="font-size: 14px; color: var(--muted); line-height: 1.5; margin-top: 6px;">
+          The generated <code>day-manager.canvas.tsx</code> is written to Cursor's managed <code>canvases/</code> directory — never committed to git. The template is version-controlled; daily output is ephemeral.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Corporate VPN / SSL compatibility</h3>
+        <p style="font-size: 14px; color: var(--muted); line-height: 1.5; margin-top: 6px;">
+          The <code>truststore</code> package injects the system certificate store into Python's SSL layer — solving the common issue where Slack SDK's bundled certs fail behind a corporate proxy.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── SLIDE 10: VALUE ───────────────────────────────────────────────────── -->
+  <div class="slide" id="slide-10">
+    <div class="label">The Value It Brings</div>
+    <h1 class="slide-title">Start every day with <span class="grad-green">clarity, not catch-up</span></h1>
+    <div class="divider"></div>
+
+    <div class="grid-3" style="max-width: 900px; margin-top: 14px;">
+      <div class="metric-box">
+        <div class="metric-num grad-blue">≈30 min</div>
+        <div class="metric-label">saved each morning scanning emails, Slack & calendar manually</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-num grad-green">0</div>
+        <div class="metric-label">forgotten action items — all sources synthesised into one prioritised list</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-num grad-purple">Live</div>
+        <div class="metric-label">Jira ticket data in every standup & 1:1 prep note — no manual lookup</div>
+      </div>
+    </div>
+
+    <div style="max-width: 900px; width: 100%; margin-top: 18px;">
+      <div class="quote-card">
+        "Meeting prep used to mean opening four browser tabs and building a mental model. Now Claude does that synthesis before I even open my inbox."
+        <div class="quote-attr">— from the action item log (Gemini: Standup Aug 12, 2026)</div>
+      </div>
+    </div>
+
+    <div style="max-width: 900px; width: 100%; margin-top: 14px;">
+      <ul class="bullets" style="font-size: 15px;">
+        <li><strong>Institutional memory:</strong> Gemini meeting notes from the last 3 work days carry action items forward automatically</li>
+        <li><strong>Team awareness:</strong> See your teammates' Jira tickets before standup — no Jira tab required</li>
+        <li><strong>Schedule coherence:</strong> Work blocks fill calendar gaps automatically, so the plan is realistic</li>
+        <li><strong>Reproducible:</strong> Every morning it's the same single command — skills are shareable with the team</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 11: HOW TO GET IT ────────────────────────────────────────────── -->
+  <div class="slide" id="slide-11">
+    <div class="label">Setup &amp; Extensibility</div>
+    <h1 class="slide-title">Built to be <span class="grad-orange">shared and extended</span></h1>
+    <div class="divider"></div>
+
+    <div class="grid-2" style="max-width: 900px; margin-top: 10px;">
+      <div class="card">
+        <h3>Setup (one-time)</h3>
+        <ul class="bullets" style="font-size: 14px; margin-top: 8px;">
+          <li>Copy the Apps Script to your Google account → deploy</li>
+          <li>Create a Slack bot, add channels to <code>.env</code></li>
+          <li>Install Python deps (<code>pip install -e .</code>)</li>
+          <li>Register <code>run_ingest.ps1</code> in Windows Task Scheduler</li>
+          <li>Copy SKILL.md to your Cursor skills folder</li>
+        </ul>
+        <div style="margin-top: 12px;">
+          <span class="pill pill-green">Full guide in SETUP.md</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Easy to extend</h3>
+        <ul class="bullets" style="font-size: 14px; margin-top: 8px;">
+          <li>Add a new Slack channel: one line in <code>.env</code></li>
+          <li>Add a new data source: write an <code>ingest_*.py</code> script, add to <code>ingest_all.py</code></li>
+          <li>Change the canvas layout: edit the template TSX</li>
+          <li>Add a new MCP tool: extend Step 2.5 in SKILL.md</li>
+          <li>Change the briefing format: edit the Claude prompt in Step 3</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Skill trigger phrases</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+          <code>manage my day</code>
+          <code>daily briefing</code>
+          <code>plan my day</code>
+          <code>what's on today</code>
+          <code>show me the dashboard</code>
+          <code>what do I need to do</code>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Project structure</h3>
+        <pre style="font-size: 12px; background: none; border: none; padding: 0;">day-manager/
+├── .cursor/skills/manage-my-day/SKILL.md
+├── scripts/
+│   ├── ingest_all.py        ← orchestrator
+│   ├── ingest_gmail.py
+│   ├── ingest_gcal.py
+│   └── ingest_slack.py
+├── apps-script/day_manager.gs
+├── scheduler/run_ingest.ps1
+├── day_manager.canvas.TEMPLATE.tsx
+└── SETUP.md</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 12: CLOSING ─────────────────────────────────────────────────── -->
+  <div class="slide" id="slide-12">
+    <div class="label">Wrap-up</div>
+    <h1 class="slide-title" style="margin-bottom: 0;">
+      <span class="grad-main">Day Manager</span>
+    </h1>
+    <p class="slide-subtitle" style="max-width: 680px;">
+      A practical AI skill for people who live in email, calendar, and Slack — and want to start the day with a plan, not a pile.
+    </p>
+    <div class="divider"></div>
+
+    <div class="grid-3" style="max-width: 820px; margin-top: 10px;">
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 32px; margin-bottom: 8px;">⚡</div>
+        <div style="font-weight: 600; margin-bottom: 6px;">Cursor-powered</div>
+        <div style="font-size: 13px; color: var(--muted);">A native Cursor Agent Skill — synthesis across 4–6 sources into structured, actionable output</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 32px; margin-bottom: 8px;">⚙️</div>
+        <div style="font-weight: 600; margin-bottom: 6px;">Fully automated</div>
+        <div style="font-size: 13px; color: var(--muted);">Ingestion runs at 08:00. You just open Cursor and type one command.</div>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 32px; margin-bottom: 8px;">🔗</div>
+        <div style="font-weight: 600; margin-bottom: 6px;">MCP-integrated</div>
+        <div style="font-size: 13px; color: var(--muted);">Live Jira + Confluence enrich every meeting prep note automatically.</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 28px; text-align: center;">
+      <div style="font-size: 22px; font-weight: 700; margin-bottom: 12px; color: var(--text);">Questions?</div>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <span class="pill pill-green">📁 personal-skills/day-manager</span>
+        <span class="pill pill-blue">📖 SETUP.md for instructions</span>
+        <span class="pill pill-purple">💬 ask Yvonne</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end deck -->
+
+<!-- ── NAVIGATION ─────────────────────────────────────────────────────────── -->
+<div class="slide-counter" id="counter">1 / 13</div>
+
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Prev</button>
+  <div id="dots"></div>
+  <button class="nav-btn" id="nextBtn" onclick="go(1)">Next →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('out');
+    setTimeout(() => slides[current].classList.remove('out'), 500);
+    current = idx;
+    slides[current].classList.add('active');
+    // update dots
+    document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+  }
+
+  function go(dir) { goTo(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    go(-1);
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(total - 1);
+  });
+
+  // Touch swipe support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  });
+</script>
+</body>
+</html>
